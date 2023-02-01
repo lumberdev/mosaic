@@ -26,22 +26,18 @@ export const actions = {
 		const tool = result?.text ? JSON.parse(result.text) : null;
 
 		// 2. Add entry to airtable
-		const airtableResponse = await airtable.post(
-			`/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_BASE_NAME}`,
-			{
-				records: [
-					{
-						fields: {
-							URL: url,
-							Title: tool.site.title,
-							Description: tool.site.description,
-							Tags: tool.site.tags.join(' | ')
-						}
+		await airtable.post(`/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_BASE_NAME}`, {
+			records: [
+				{
+					fields: {
+						URL: url,
+						Title: tool.site.title,
+						Description: tool.site.description,
+						Tags: tool.site.tags.join(' | ')
 					}
-				]
-			}
-		);
-		console.log(airtableResponse);
+				}
+			]
+		});
 
 		// 3. Redirect to home
 		throw redirect(303, '/');

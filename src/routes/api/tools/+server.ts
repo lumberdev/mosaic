@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private';
 import { error, json } from '@sveltejs/kit';
 import { airtable } from '../../../utils/airtable';
 import { openai } from '../../../utils/openai';
@@ -5,7 +6,7 @@ import readibility from '../../../utils/readibility';
 
 export const GET = async () => {
 	try {
-		const { status, data } = await airtable.post('/listRecords', {});
+		const { status, data } = await airtable.post(`/${env.AIRTABLE_BASE_ID}/${encodeURI(env.AIRTABLE_BASE_NAME)}/listRecords`, {});
 
 		if (status !== 200) throw error(500, { message: 'Something went wrong.' });
 

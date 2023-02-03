@@ -39,7 +39,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@mozilla/readability": "^0.4.2",
 		"@supabase/supabase-js": "^2.7.0",
 		"axios": "^1.2.4",
 		"jsdom": "^21.1.0"

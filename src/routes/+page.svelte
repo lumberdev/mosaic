@@ -9,10 +9,10 @@
 <div class="grid min-h-screen place-items-center">
 	<h1 class="text-center text-3xl">This is Mosaic!</h1>
 	<ul>
-		{#each tools as { title, url }}
+		{#each tools as { name, url, slug }}
 			<li class="flex items-center gap-1">
-				<h2 class="text-lg font-semibold">{title}</h2>
-				<a href={url} class="text-blue-700 underline">Live site</a>
+				<h2 class="text-lg font-semibold"><a href="/tools/{slug}">{name}</a></h2>
+				<a href={url} target="_blank" rel="noreferrer" class="text-blue-700 underline">Live site</a>
 			</li>
 		{/each}
 	</ul>

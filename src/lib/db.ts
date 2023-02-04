@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/private';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
 import type { Database } from '../types/supabase';
 
-export const supabase = createClient<Database>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);

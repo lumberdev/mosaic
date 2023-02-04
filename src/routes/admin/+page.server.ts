@@ -1,7 +1,6 @@
 import { redirect } from '@sveltejs/kit';
-
-import type { Actions } from './$types';
 import { supabase } from '$lib/db';
+import type { Actions } from './$types';
 
 export const actions = {
 	insert: async ({ request }) => {

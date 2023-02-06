@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { supabase } from '$lib/db';
+import { supabase } from '$lib/supabase';
 import type { Actions } from './$types';
 
 export const actions = {

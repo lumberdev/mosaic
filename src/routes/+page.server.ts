@@ -1,4 +1,4 @@
-import { supabase } from '$lib/db';
+import { supabase } from '$lib/supabase';
 
 export const load = async () => {
 	const { status, data: tools, error } = await supabase.from('tools').select('*');

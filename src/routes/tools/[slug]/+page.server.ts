@@ -1,4 +1,4 @@
-import { supabase } from '$lib/db';
+import { supabase } from '$lib/supabase';
 import { error as svelteError } from '@sveltejs/kit';
 
 export async function load({ params }: { params: { slug: string } }) {

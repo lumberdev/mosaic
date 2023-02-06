@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.u-background-gradient {
+	@apply bg-gradient-to-tr from-[#1a14c6] to-[#6e2678];
+}
+
+.u-text-gradient {
+	@apply bg-clip-text text-transparent;
+}

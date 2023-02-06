@@ -4,16 +4,24 @@
 	export let data: PageData;
 	let { tools } = data;
 	$: ({ tools } = data);
+
+  let randomImages = [...tools].sort(() => 0.5 - Math.random()).slice(0, 5);
+  console.log(randomImages);
 </script>
 
-<div class="grid min-h-screen place-items-center">
-	<h1 class="text-center text-3xl">This is Mosaic!</h1>
-	<ul>
-		{#each tools as { name, url, slug }}
-			<li class="flex items-center gap-1">
-				<h2 class="text-lg font-semibold"><a href="/tools/{slug}">{name}</a></h2>
-				<a href={url} target="_blank" rel="noreferrer" class="text-blue-700 underline">Live site</a>
-			</li>
-		{/each}
-	</ul>
-</div>
+<section class="grid min-h-screen place-items-center px-4 lg:px-12 lg:grid-cols-2">
+  {#each tools as { name, url, slug, description }}
+    <article class="flex items-stretch">
+      <div class="w-24 h-full aspect-square border-2 border-black bg-gray-200">
+
+      </div>
+
+      <div class="flex-1 p-8 border-2 border-black">
+        <h2 class="text-5xl font-semibold mb-2"><a href="/tools/{slug}">{name}</a></h2>
+        <a href={url} class="italic underline mb-8 block">{url}</a>
+
+        <p>{description}</p>
+      </div>
+    </article>
+  {/each}
+</section>

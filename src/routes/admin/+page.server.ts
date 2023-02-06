@@ -42,7 +42,7 @@ export const actions: Actions = {
 		/**
 		 * Protect the route with a session check
 		 */
-		const { session } = await getSupabase(event);
+		const { session, supabaseClient } = await getSupabase(event);
 		if (!session) {
 			throw svelteError(403, 'Not authorized');
 		}
@@ -53,7 +53,7 @@ export const actions: Actions = {
 
 		if (!slug || !name || !url) throw new Error('Missing data');
 
-		const { error: insertToolError, status } = await supabase
+		const { error: insertToolError, status } = await supabaseClient
 			.from('tools')
 			.insert({ name, slug, url });
 

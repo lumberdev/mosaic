@@ -9,27 +9,30 @@ export interface Database {
 					description: string | null;
 					id: number;
 					image: string | null;
+					name: string;
+					slug: string;
 					tags: string[] | null;
-					title: string | null;
-					url: string | null;
+					url: string;
 				};
 				Insert: {
 					created_at?: string | null;
 					description?: string | null;
 					id?: number;
 					image?: string | null;
+					name: string;
+					slug: string;
 					tags?: string[] | null;
-					title?: string | null;
-					url?: string | null;
+					url: string;
 				};
 				Update: {
 					created_at?: string | null;
 					description?: string | null;
 					id?: number;
 					image?: string | null;
+					name?: string;
+					slug?: string;
 					tags?: string[] | null;
-					title?: string | null;
-					url?: string | null;
+					url?: string;
 				};
 			};
 		};

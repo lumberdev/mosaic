@@ -1,6 +1,7 @@
 <script>
 	export let data;
-	console.log(data);
+	const { tool } = data;
 </script>
 
-<h1>This is a tool page</h1>
+<h1>{tool?.name}</h1>
+<p>{tool?.description}</p>

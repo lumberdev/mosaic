@@ -1,8 +1,9 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, error as svelteError } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase';
 import type { Actions } from './$types';
+import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 
-export const actions = {
+export const actions: Actions = {
 	signUp: async ({ request }) => {
 		const data = await request.formData();
 		const email = data.get('email')?.toString();
@@ -36,7 +37,15 @@ export const actions = {
 			throw redirect(303, '/admin');
 		}
 	},
-	insert: async ({ request }) => {
+	insert: async (event) => {
+		const { request } = event;
+		/**
+		 * Protect the route with a session check
+		 */
+		const { session } = await getSupabase(event);
+		if (!session) {
+			throw svelteError(403, 'Not authorized');
+		}
 		const data = await request.formData();
 		const slug = data.get('name')?.toString().toLowerCase().replace(/ /g, '-');
 		const name = data.get('name')?.toString();
@@ -44,13 +53,15 @@ export const actions = {
 
 		if (!slug || !name || !url) throw new Error('Missing data');
 
-		const { error, status } = await supabase.from('tools').insert({ name, slug, url });
+		const { error: insertToolError, status } = await supabase
+			.from('tools')
+			.insert({ name, slug, url });
 
-		if (error) {
-			throw new Error(error.message);
+		if (insertToolError) {
+			throw new Error(insertToolError.message);
 		}
 		if (status === 201) {
 			throw redirect(303, `/tools/${slug}`);
 		}
 	}
-} satisfies Actions;
+};

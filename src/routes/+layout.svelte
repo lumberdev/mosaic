@@ -1,7 +1,8 @@
 <script>
 	import '../app.css';
+	import '@fontsource/unbounded';
 	import { supabase } from '$lib/supabase';
-	import { invalidate } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -14,7 +15,6 @@
 			subscription.unsubscribe();
 		};
 	});
-	import '@fontsource/unbounded';
 </script>
 
 <header class="flex flex-col items-center justify-center py-16 lg:py-24">

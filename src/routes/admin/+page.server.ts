@@ -1,42 +1,55 @@
 import { redirect, error as svelteError } from '@sveltejs/kit';
-import { supabase } from '$lib/supabase';
 import type { Actions } from './$types';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
+import { AuthApiError } from '@supabase/supabase-js';
 
 export const actions: Actions = {
-	signUp: async ({ request }) => {
+	signUp: async (event) => {
+		const { request } = event;
+		const { supabaseClient } = await getSupabase(event);
 		const data = await request.formData();
-		const email = data.get('email')?.toString();
-		const password = data.get('password')?.toString();
+
+		const email = data.get('email') as string;
+		const password = data.get('password') as string;
 
 		if (!email || !password) throw new Error('Missing data');
 
-		const { error, data: user } = await supabase.auth.signUp({ email, password });
+		const { error, data: user } = await supabaseClient.auth.signUp({ email, password });
 
 		if (error) {
 			throw new Error(error.message);
 		}
 		if (user) {
-			console.log(user);
 			throw redirect(303, '/admin');
 		}
 	},
-	signIn: async ({ request }) => {
+	signIn: async (event) => {
+		const { request } = event;
+		const { supabaseClient } = await getSupabase(event);
+
 		const data = await request.formData();
-		const email = data.get('email')?.toString();
-		const password = data.get('password')?.toString();
+
+		const email = data.get('email') as string;
+		const password = data.get('password') as string;
+
 		if (!email || !password) throw new Error('Missing data');
 
-		const { error, data: user } = await supabase.auth.signInWithPassword({ email, password });
+		const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
 		if (error) {
-			throw new Error(error.message);
+			if (error instanceof AuthApiError && error.status === 400) {
+				return svelteError(400, {
+					message: 'Invalid credentials.'
+				});
+			}
+			return svelteError(500, {
+				message: 'Server error. Try again later.'
+			});
 		}
-		if (user) {
-			console.log(user);
-			throw redirect(303, '/admin');
-		}
+
+		throw redirect(303, '/admin');
 	},
+
 	insert: async (event) => {
 		const { request } = event;
 		/**

@@ -6,20 +6,25 @@
 	$: ({ tools } = data);
 
 	let randomImages = [...tools].sort(() => 0.5 - Math.random()).slice(0, 5);
-	console.log(randomImages);
 </script>
 
-<section class="grid min-h-screen place-items-center px-4 lg:grid-cols-2 lg:px-12">
+<section class="min-h-screen">
 	{#each tools as { name, url, slug, description }}
-		<article class="flex items-stretch">
-			<div class="aspect-square h-full w-24 border-2 border-black bg-gray-200" />
+		<article
+			class="flex w-full items-stretch border-2 border-black first:border-t-4 last:border-b-4 lg:border-4 lg:first:border-t-8 lg:last:border-b-8"
+		>
+			<div class="aspect-video w-40 border-r-4 border-black bg-gray-200 md:w-96 lg:border-r-8" />
 
-			<div class="flex-1 border-2 border-black p-8">
-				<h2 class="mb-2 text-5xl font-semibold"><a href="/tools/{slug}">{name}</a></h2>
-				<a href={url} class="mb-8 block italic underline">{url}</a>
+			<h2 class="group flex flex-1 items-stretch">
+				<a
+					href="/tools/{slug}"
+					class="flex items-center p-8 text-2xl font-semibold transition-all duration-300 md:text-5xl"
+				>
+					<span class="group-hover:opacity-50">{name}</span>
 
-				<p>{description}</p>
-			</div>
+					<span class="ml-4 hidden text-xs italic underline group-hover:block">{url}</span>
+				</a>
+			</h2>
 		</article>
 	{/each}
 </section>

@@ -39,6 +39,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@mozilla/readability": "^0.4.2",
+		"@supabase/auth-helpers-sveltekit": "^0.8.7",
 		"@fontsource/unbounded": "^4.5.1",
 		"@supabase/supabase-js": "^2.7.0",
 		"axios": "^1.2.4",

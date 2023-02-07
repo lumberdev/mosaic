@@ -2,7 +2,7 @@
 	import '../app.css';
 	import '@fontsource/unbounded';
 	import { supabase } from '$lib/supabase';
-	import { invalidate, invalidateAll } from '$app/navigation';
+	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -27,4 +27,5 @@
 	</h1>
 	<p class="tracking-normal lg:text-4xl">Navigating the world of AI</p>
 </header>
+
 <slot />

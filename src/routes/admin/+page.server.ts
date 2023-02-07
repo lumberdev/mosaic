@@ -49,6 +49,11 @@ export const actions: Actions = {
 
 		throw redirect(303, '/admin');
 	},
+	signOut: async (event) => {
+		const { supabaseClient } = await getSupabase(event);
+		await supabaseClient.auth.signOut();
+		throw redirect(303, '/');
+	},
 
 	insert: async (event) => {
 		const { request } = event;

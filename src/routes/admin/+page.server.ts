@@ -68,12 +68,14 @@ export const actions: Actions = {
 		const slug = data.get('name')?.toString().toLowerCase().replace(/ /g, '-');
 		const name = data.get('name')?.toString();
 		const url = data.get('url')?.toString();
+		const description = data.get('description')?.toString();
+		const tags = data.get('tags')?.toString().split(', ');
 
 		if (!slug || !name || !url) throw new Error('Missing data');
 
 		const { error: insertToolError, status } = await supabaseClient
 			.from('tools')
-			.insert({ name, slug, url });
+			.insert({ name, slug, url, description, tags });
 
 		if (insertToolError) {
 			throw new Error(insertToolError.message);

@@ -18,7 +18,7 @@
 </script>
 
 <header class="flex flex-col items-center justify-center py-16 lg:py-24">
-	<h1 class="mb-8 text-6xl font-semibold uppercase lg:text-9xl">Mosaic</h1>
+	<h1 class="mb-8 text-6xl font-semibold uppercase lg:text-9xl"><a href="/">Mosaic</a></h1>
 	<p class="tracking-normal lg:text-4xl">Navigating the world of AI</p>
 </header>
 

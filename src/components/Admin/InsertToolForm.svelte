@@ -3,7 +3,7 @@
 
 	let generationMethod = 'cached-content';
 	let url = '';
-	let title = '';
+	let name = '';
 	let description = '';
 	let tags = '';
 
@@ -19,7 +19,7 @@
 
 		const completion = await response.json();
 
-		title = completion?.name || '';
+		name = completion?.name || '';
 		description = completion?.summary || '';
 		tags = completion?.tags?.join(', ') || '';
 	};
@@ -50,7 +50,7 @@
 			? JSON.parse(String(completion.text).trim().replace(/\n/g, ''))
 			: null;
 
-		title = data?.name || '';
+		name = data?.name || '';
 		description = data?.summary || '';
 		tags = data?.tags?.join(', ') || '';
 		isLoading = false;
@@ -117,7 +117,7 @@
 			class="w-full rounded-lg bg-gray-200 p-4"
 			type="name"
 			name="name"
-			bind:value={title}
+			bind:value={name}
 			placeholder="example"
 			required
 		/>

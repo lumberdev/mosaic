@@ -1,4 +1,6 @@
 <script>
+	import { DANGEROUSLY_PUBLIC_openai } from '../../utils/public-openai';
+
 	let generationMethod = 'cached-content';
 	let url = '';
 	let title = '';
@@ -20,6 +22,37 @@
 		title = completion?.name || '';
 		description = completion?.summary || '';
 		tags = completion?.tags?.join(', ') || '';
+	};
+
+	const generateContentClientSide = async () => {
+		isLoading = true;
+
+		const params = new URLSearchParams();
+		params.set('url', url);
+		params.set('useCache', String(generationMethod === 'cached-content'));
+
+		const site =
+			generationMethod !== 'url'
+				? await (await fetch(`/api/readability?${params.toString()}`)).json()
+				: null;
+
+		const prompt = !site
+			? `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of this website: ${url}`
+			: `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of this:\n${site?.textContent}`;
+
+		const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
+			model: 'text-davinci-003',
+			prompt,
+			max_tokens: 500
+		});
+		const [completion] = openAiResponse.data.choices ?? [];
+		const data = completion?.text
+			? JSON.parse(String(completion.text).trim().replace(/\n/g, ''))
+			: null;
+
+		title = data?.name || '';
+		description = data?.summary || '';
+		tags = data?.tags?.join(', ') || '';
 		isLoading = false;
 	};
 </script>
@@ -71,7 +104,7 @@
 		<button
 			type="button"
 			class="rounded-lg bg-green-400 py-4 px-16 text-white disabled:cursor-not-allowed disabled:opacity-20"
-			on:click={generateContent}
+			on:click={generateContentClientSide}
 			disabled={isLoading}
 		>
 			Generate content

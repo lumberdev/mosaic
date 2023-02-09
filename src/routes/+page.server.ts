@@ -1,8 +1,9 @@
 import { supabase } from '$lib/supabase';
+import { error as svelteError } from '@sveltejs/kit';
 
 export const load = async () => {
-	const { status, data: tools, error } = await supabase.from('tools').select('*');
-	if (error || status !== 200) return { tools: [] };
+	const { data: tools, error } = await supabase.from('tools').select('*');
+	if (error) throw svelteError(500, { ...error });
 
 	return {
 		tools

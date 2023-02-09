@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const { error, data: user } = await supabaseClient.auth.signUp({ email, password });
 
 		if (error) {
-			throw new Error(error.message);
+			throw svelteError(error.status ?? 500, error.message);
 		}
 		if (user) {
 			throw redirect(303, '/admin');
@@ -32,7 +32,7 @@ export const actions: Actions = {
 		const email = data.get('email') as string;
 		const password = data.get('password') as string;
 
-		if (!email || !password) throw new Error('Missing data');
+		if (!email || !password) throw svelteError(400, 'Missing data');
 
 		const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
@@ -49,6 +49,7 @@ export const actions: Actions = {
 
 		throw redirect(303, '/admin');
 	},
+
 	signOut: async (event) => {
 		const { supabaseClient } = await getSupabase(event);
 		await supabaseClient.auth.signOut();
@@ -65,7 +66,7 @@ export const actions: Actions = {
 			throw svelteError(403, 'Not authorized');
 		}
 		const data = await request.formData();
-		const slug = data.get('name')?.toString().toLowerCase().replace(/ /g, '-');
+		const slug = data.get('name')?.toString().toLowerCase().replace(/\s/g, '-');
 		const name = data.get('name')?.toString();
 		const url = data.get('url')?.toString();
 		const description = data.get('description')?.toString();
@@ -78,8 +79,9 @@ export const actions: Actions = {
 			.insert({ name, slug, url, description, tags });
 
 		if (insertToolError) {
-			throw new Error(insertToolError.message);
+			throw svelteError(422, insertToolError.message);
 		}
+
 		if (status === 201) {
 			throw redirect(303, `/tools/${slug}`);
 		}

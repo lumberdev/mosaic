@@ -2,11 +2,11 @@
 	import Logo from '../SVG/Logo.svelte';
 </script>
 
-<header class="my-8 mx-12 flex justify-between border-b-4 border-t-4 border-black py-5">
+<header class=" flex justify-between border-b-4 border-t-4 border-black py-5">
 	<div class="flex items-center gap-3">
 		<Logo />
 		<div class="font-display">
-			<h1 class="text-2xl font-bold"><a href="/">Mosaic</a></h1>
+			<h2 class="text-2xl font-bold"><a href="/">Mosaic</a></h2>
 			<p>The AI Directory</p>
 		</div>
 	</div>

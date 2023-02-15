@@ -6,8 +6,9 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				display: ['Silkscreen', ...defaultTheme.fontFamily.sans],
+				display: 'Silkscreen',
 				sans: ['"Spline Sans"', ...defaultTheme.fontFamily.sans],
+				roboto: ['Roboto', ...defaultTheme.fontFamily.sans],
 			},
 			borderWidth: {
 				3: '3px',
@@ -21,6 +22,7 @@ module.exports = {
 			},
 			colors: {
 				beige: '#E2E8E4',
+				lumber: '#FFCC08',
 			},
 		},
 	},

@@ -1,5 +1,7 @@
 <script>
+	import Button from '../Forms/Button.svelte';
 	import Logo from '../SVG/Logo.svelte';
+	const buttonLabel = 'Submit an AI';
 </script>
 
 <header class=" flex justify-between border-b-4 border-t-4 border-black py-5">
@@ -10,8 +12,5 @@
 			<p>The AI Directory</p>
 		</div>
 	</div>
-	<button
-		class="rounded border-3 border-black bg-white px-5 py-4 font-display text-lg font-bold shadow-sm hover:shadow-md"
-		>Submit an AI</button
-	>
+	<Button {buttonLabel} />
 </header>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ToolCard from '../components/Home/ToolCard.svelte';
+	import SubmitAi from '../components/Forms/SubmitAI.svelte';
 	import ToolGrid from '../components/Home/ToolGrid.svelte';
 	import type { PageData } from './$types';
 
@@ -14,3 +14,4 @@
 	Created By humans, <br /> Summarized by AI
 </h1>
 <ToolGrid {tools} />
+<SubmitAi />

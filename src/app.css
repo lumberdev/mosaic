@@ -1,4 +1,13 @@
 @tailwind base;
+body {
+	background: conic-gradient(
+			from 180deg at 50% 50%,
+			#afff7d 0deg,
+			rgba(103, 163, 253, 0) 180deg,
+			#afff7d 360deg
+		),
+		#ffffff;
+}
 @tailwind components;
 @tailwind utilities;
 

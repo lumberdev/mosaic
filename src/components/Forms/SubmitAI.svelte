@@ -18,7 +18,7 @@
 	};
 </script>
 
-<form class="mx-auto mt-24 max-w-3xl rounded border-3 border-black bg-white">
+<form class="mx-auto mt-24 max-w-3xl rounded border-3 border-black bg-white shadow-sm">
 	<div class="bg-black px-5 py-4 font-display text-white">
 		<h4>Submit an AI</h4>
 	</div>

@@ -4,7 +4,7 @@
 	const buttonLabel = 'Submit an AI';
 </script>
 
-<header class=" flex justify-between border-b-4 border-t-4 border-black py-5">
+<header class="mb-20 flex justify-between border-b-4 border-t-4 border-black py-5">
 	<div class="flex items-center gap-3">
 		<Logo />
 		<div class="font-display">

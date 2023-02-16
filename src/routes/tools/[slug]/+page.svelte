@@ -1,4 +1,5 @@
 <script>
+	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 	import SubmitAi from '../../../components/Forms/SubmitAI.svelte';
 
 	export let data;
@@ -6,12 +7,14 @@
 	const { name, description, url, image, featured_image } = tool;
 	const pricing = 'free';
 	const shortDescription = description.substring(0, 300);
+	const image_url =
+		PUBLIC_SUPABASE_URL + '/storage/v1/object/public/tools-images/' + featured_image;
 </script>
 
 <section class="relative grid gap-5 md:grid-cols-12">
 	<div
 		class="aspect-[660/433] rounded border-3  border-black object-cover shadow-md md:col-start-2 md:col-end-8  md:mb-12">
-		<img class="h-full overflow-hidden" src={featured_image} alt={name} />
+		<img class="h-full overflow-hidden" src={image_url} alt={name} />
 	</div>
 	<div
 		class="relative mt-6 grid gap-8 rounded px-6 pt-6 pb-16 md:col-start-8 md:col-end-12 md:mt-12 md:pt-9 md:pb-24 md:pl-5 md:pr-12">

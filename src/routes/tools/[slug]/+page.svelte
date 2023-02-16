@@ -8,12 +8,13 @@
 	const shortDescription = description.substring(0, 300);
 </script>
 
-<section class="relative grid grid-cols-12 gap-5">
+<section class="relative grid gap-5 md:grid-cols-12">
 	<div
-		class="col-start-2 col-end-8 mb-12  aspect-[660/433] rounded border-3 border-black object-cover  shadow-md">
+		class="aspect-[660/433] rounded border-3  border-black object-cover shadow-md md:col-start-2 md:col-end-8  md:mb-12">
 		<img class="h-full overflow-hidden" src={featured_image} alt={name} />
 	</div>
-	<div class="relative col-start-8 col-end-12 mt-12 grid gap-8 rounded pt-9 pb-24 pl-5 pr-12">
+	<div
+		class="relative mt-6 grid gap-8 rounded px-6 pt-6 pb-16 md:col-start-8 md:col-end-12 md:mt-12 md:pt-9 md:pb-24 md:pl-5 md:pr-12">
 		<div>
 			<h1 class="text-2xl font-bold">{name}</h1>
 			<a class="font-display" target="_blank" rel="noreferrer noopener" href={url}>{url}</a>
@@ -21,7 +22,7 @@
 		<p>{shortDescription}</p>
 		<p class="font-display">Pricing: <span>{pricing}</span></p>
 		<div
-			class="absolute top-0 right-0 -z-10 grid h-full w-[calc(100%+52%)] rounded border-3 border-black bg-white">
+			class="absolute top-0 right-0 -z-10 grid h-full w-full rounded border-3 border-black bg-white md:w-[calc(100%+52%)]">
 			<div class="h-12 w-full self-end bg-black" />
 		</div>
 	</div>

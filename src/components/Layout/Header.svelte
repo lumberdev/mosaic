@@ -4,7 +4,8 @@
 	const buttonLabel = 'Submit an AI';
 </script>
 
-<header class="mb-20 flex justify-between border-b-4 border-t-4 border-black py-5">
+<header
+	class="mb-20 flex flex-col justify-between border-b-4 border-t-4 border-black py-5 md:flex-row">
 	<div class="flex items-center gap-3">
 		<Logo />
 		<div class="font-display">
@@ -12,5 +13,5 @@
 			<p>The AI Directory</p>
 		</div>
 	</div>
-	<Button {buttonLabel} />
+	<Button className="md:block hidden" {buttonLabel} />
 </header>

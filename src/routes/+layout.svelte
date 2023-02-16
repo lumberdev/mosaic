@@ -20,7 +20,7 @@
 	});
 </script>
 
-<main class="my-8 mx-12">
+<main class="my-8 mx-4 md:mx-12">
 	<Header />
 	<slot />
 	<Footer />

@@ -18,16 +18,16 @@
 	};
 </script>
 
-<form class="mx-auto mt-24 max-w-3xl rounded border-3 border-black bg-white shadow-sm">
+<form class="mx-auto mt-16 max-w-3xl rounded border-3 border-black bg-white shadow-sm md:mt-24">
 	<div class="bg-black px-5 py-4 font-display text-white">
 		<h4>Submit an AI</h4>
 	</div>
-	<div class="flex flex-col items-center py-12">
+	<div class="flex flex-col items-center py-12 px-5">
 		<div class="mb-7 text-center font-bold leading-6">
 			<p>Want to share something cool?</p>
 			<p>Submit your AI projects or some hidden gems!</p>
 		</div>
-		<div class="flex w-full flex-col items-center gap-3 px-12 md:px-24">
+		<div class="flex w-full flex-col items-center gap-3 px-0 md:px-24">
 			<Input {...urlInputAttributes} />
 			<Input {...emailInputAttributes} />
 			<Button {buttonLabel} />

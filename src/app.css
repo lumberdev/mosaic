@@ -18,3 +18,19 @@ body {
 .u-text-gradient {
 	@apply bg-clip-text text-transparent;
 }
+
+.c-field {
+	@apply mb-4 flex flex-col last:mb-0;
+}
+
+.c-field .c-field-label {
+	@apply mb-2 block font-display text-sm uppercase;
+}
+
+.c-field .c-field-input {
+	@apply rounded border-3 border-black bg-white px-5 py-4;
+}
+
+.c-btn-submit {
+	@apply rounded border-3 border-black bg-white px-5 py-4 font-display text-lg font-bold shadow-sm hover:shadow-md;
+}

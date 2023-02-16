@@ -2,18 +2,11 @@
 	import LoginButton from './LoginButton.svelte';
 	import LoginInputs from './LoginInputs.svelte';
 
-	export let isNewUser: boolean;
-	export let flipIsNewUser: () => void;
-
 	let email = '';
 	let password = '';
 </script>
 
-<form method="POST" action="?/signIn">
+<form method="POST" action="?/signIn" class="mx-auto flex max-w-xl flex-col py-12">
 	<LoginInputs {email} {password} />
 	<LoginButton buttonLabel="Sign In" />
 </form>
-
-{#if !isNewUser}
-	<p>Don't have an account? <button on:click={flipIsNewUser}>Sign up</button></p>
-{/if}

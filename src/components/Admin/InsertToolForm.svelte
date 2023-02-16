@@ -43,7 +43,7 @@
 		const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
 			model: 'text-davinci-003',
 			prompt,
-			max_tokens: 500
+			max_tokens: 500,
 		});
 		const [completion] = openAiResponse.data.choices ?? [];
 		const data = completion?.text
@@ -57,87 +57,85 @@
 	};
 </script>
 
-<form method="POST" action="?/insert" class="flex w-full flex-col items-center justify-center">
-	<h1 class="mb-2 text-5xl">Found a new cool AI tool?</h1>
-	<p class="mb-8 opacity-70">Let's add it to Mosaic!</p>
+<form
+	method="POST"
+	action="?/insert"
+	class="mx-auto flex w-max flex-col items-center justify-center pt-8">
+	<h1 class="mb-4 font-display text-5xl">Found a new cool AI tool?</h1>
+	<p class="mb-8">Let's add it to Mosaic!</p>
 
-	<div class="mb-8">
-		<p class="mb-4 text-center">How do you want to summarize this website?</p>
+	<div class="mb-8 w-max">
+		<p class="mb-4 text-center font-display">How do you want to summarize this website?</p>
 
-		<div class="grid grid-cols-3 gap-2">
-			<label class="rounded-lg bg-gray-200 p-2">
+		<div class="grid w-full grid-cols-3 gap-2">
+			<label class="rounded border-3 border-black bg-white px-5 py-4">
 				<input
 					type="radio"
 					bind:group={generationMethod}
 					name="method"
 					value="cached-content"
-					checked
-				/>
+					checked />
 				<span>Cached Content</span>
 			</label>
 
-			<label class="rounded-lg bg-gray-200 p-2">
+			<label class="rounded border-3 border-black bg-white px-5 py-4">
 				<input type="radio" bind:group={generationMethod} name="method" value="content" />
 				<span>Website's Content</span>
 			</label>
 
-			<label class="rounded-lg bg-gray-200 p-2">
+			<label class="rounded border-3 border-black bg-white px-5 py-4">
 				<input type="radio" bind:group={generationMethod} name="method" value="url" />
 				<span>URL</span>
 			</label>
 		</div>
 	</div>
 
-	<label class="mb-12 flex flex-col items-start">
-		<span class="block text-center">URL</span>
+	<label class="c-field w-full">
+		<span class="c-field-label">URL</span>
 		<input
-			class="w-full rounded-lg bg-gray-200 p-4"
+			class="c-field-input"
 			type="url"
 			name="url"
 			bind:value={url}
 			placeholder="https://example.com"
-			required
-		/>
+			required />
 	</label>
 
-	<div class="mb-12">
+	<div class="mb-12 w-full">
 		<button
 			type="button"
-			class="rounded-lg bg-green-400 py-4 px-16 text-white disabled:cursor-not-allowed disabled:opacity-20"
+			class="c-btn-submit w-full disabled:cursor-not-allowed disabled:opacity-20"
 			on:click={generateContentClientSide}
-			disabled={isLoading}
-		>
+			disabled={isLoading}>
 			Generate content
 		</button>
 	</div>
 
-	<label class="mb-12 flex flex-col items-start">
-		<span class="block text-center">Name</span>
+	<label class="c-field w-full">
+		<span class="c-field-label">Name</span>
 		<input
-			class="w-full rounded-lg bg-gray-200 p-4"
+			class="c-field-input"
 			type="name"
 			name="name"
 			bind:value={name}
 			placeholder="example"
-			required
-		/>
+			required />
 	</label>
 
-	<label class="mb-12 flex flex-col items-start">
-		<span class="block text-center">Description</span>
+	<label class="c-field w-full">
+		<span class="c-field-label">Description</span>
 		<textarea
-			class="w-full rounded-lg bg-gray-200 p-4"
+			class="c-field-input"
 			name="description"
 			placeholder="Brief description..."
 			bind:value={description}
-			required
-		/>
+			required />
 	</label>
 
-	<label class="mb-12 flex flex-col items-start">
-		<span class="block text-center">Tags</span>
-		<input class="w-full rounded-lg bg-gray-200 p-4" type="name" name="tags" bind:value={tags} />
+	<label class="c-field w-full">
+		<span class="c-field-label">Tags</span>
+		<input class="c-field-input" type="name" name="tags" bind:value={tags} />
 	</label>
 
-	<button type="submit" class="rounded-lg bg-blue-500 py-4 px-16 text-white">Submit</button>
+	<button type="submit" class="c-btn-submit w-full">Submit</button>
 </form>

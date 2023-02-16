@@ -3,5 +3,5 @@
 </script>
 
 <form method="POST" action="?/signOut">
-	<LoginButton buttonLabel="Sign Out" />
+	<button type="submit" class="px-5 py-4 font-display">← Sign Out</button>
 </form>

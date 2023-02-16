@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { DANGEROUSLY_PUBLIC_openai } from '../../utils/public-openai';
 
 	let generationMethod = 'cached-content';
@@ -6,6 +6,7 @@
 	let name = '';
 	let description = '';
 	let tags = '';
+	let file: FileList;
 
 	let isLoading = false;
 
@@ -60,6 +61,7 @@
 <form
 	method="POST"
 	action="?/insert"
+	enctype="multipart/form-data"
 	class="mx-auto flex w-max flex-col items-center justify-center pt-8">
 	<h1 class="mb-4 font-display text-5xl">Found a new cool AI tool?</h1>
 	<p class="mb-8">Let's add it to Mosaic!</p>
@@ -135,6 +137,11 @@
 	<label class="c-field w-full">
 		<span class="c-field-label">Tags</span>
 		<input class="c-field-input" type="name" name="tags" bind:value={tags} />
+	</label>
+
+	<label class="c-field w-full">
+		<span class="c-field-label">Featured Image</span>
+		<input type="file" class="c-field-input" name="image" bind:value={file} required />
 	</label>
 
 	<button type="submit" class="c-btn-submit w-full">Submit</button>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { DANGEROUSLY_PUBLIC_openai } from '../../utils/public-openai';
 
 	let generationMethod = 'cached-content';
@@ -59,6 +60,7 @@
 </script>
 
 <form
+	use:enhance
 	method="POST"
 	action="?/insert"
 	enctype="multipart/form-data"

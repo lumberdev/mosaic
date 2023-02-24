@@ -13,5 +13,5 @@
 			<p>The AI Directory</p>
 		</div>
 	</div>
-	<Button className="md:block hidden" {buttonLabel} />
+	<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
 </header>

@@ -1,4 +1,9 @@
 @tailwind base;
+
+:root {
+	scroll-behavior: smooth;
+}
+
 body {
 	background: conic-gradient(
 			from 180deg at 50% 50%,

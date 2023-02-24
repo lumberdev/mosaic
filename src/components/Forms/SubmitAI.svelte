@@ -1,4 +1,5 @@
 <script>
+	import { enhance } from '$app/forms';
 	import Button from './Button.svelte';
 	import Input from './Input.svelte';
 	const buttonLabel = "Let's Go";
@@ -18,7 +19,12 @@
 	};
 </script>
 
-<form class="mx-auto mt-16 max-w-3xl rounded border-3 border-black bg-white shadow-sm md:mt-24">
+<form
+	use:enhance
+	id="submit-ai-form"
+	method="POST"
+	action="/?/submitTool"
+	class="mx-auto mt-16 max-w-3xl rounded border-3 border-black bg-white shadow-sm md:mt-24">
 	<div class="bg-black px-5 py-4 font-display text-white">
 		<h4>Submit an AI</h4>
 	</div>

@@ -25,11 +25,14 @@
 	const formSubheadingStyles = 'mb-7 text-center font-bold leading-6';
 
 	let isSubmitting = false;
-	const submitTool: SubmitFunction = () => {
+	const submitTool: SubmitFunction = ({ form }) => {
 		isSubmitting = true;
 		return async ({ result }) => {
 			isSubmitting = false;
-			await applyAction(result);
+			if (result.type === 'success') {
+				form.reset();
+				await applyAction(result);
+			}
 		};
 	};
 </script>

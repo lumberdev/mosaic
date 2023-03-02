@@ -17,7 +17,7 @@
 			<Arrow className="[&_path]:group-hover:fill-white" />
 		</div>
 		<img class="aspect-video w-full" src={image_url} alt={name} />
-		<div class="border-t-3 border-black p-5 transition-colors group-hover:bg-beige">
+		<div class="rounded border-t-3 border-black p-5 transition-colors group-hover:bg-beige">
 			<h2 class="mb-[10px] text-2xl font-bold">{name}</h2>
 			<p class="mb-5">
 				Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto, repellendus?

@@ -20,6 +20,11 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Mosaic | The AI Aggregator</title>
+	<meta name="description" content="The AI aggregator tool, created by humans, summarized by AI" />
+</svelte:head>
+
 <main class="my-8 mx-4 min-h-screen md:mx-12">
 	<Header />
 	<slot />

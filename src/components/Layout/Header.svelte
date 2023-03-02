@@ -1,7 +1,12 @@
-<script>
+<script lang="ts">
+	import { page } from '$app/stores';
 	import Button from '../Forms/Button.svelte';
 	import Logo from '../SVG/Logo.svelte';
-	const buttonLabel = 'Submit an AI';
+
+	const { route } = $page;
+	const isAdmin = /admin/i.test(route.id!);
+	const buttonLabel = isAdmin ? 'Back to Home' : 'Submit an AI';
+	console.log($page);
 </script>
 
 <header
@@ -13,5 +18,9 @@
 			<p>The AI Directory</p>
 		</div>
 	</div>
-	<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
+	{#if isAdmin}
+		<Button as="a" href="/" className="md:block hidden" {buttonLabel} />
+	{:else}
+		<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
+	{/if}
 </header>

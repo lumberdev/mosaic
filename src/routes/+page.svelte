@@ -1,16 +1,16 @@
 <script lang="ts">
-	import ToolCard from '../components/Home/ToolCard.svelte';
-	import type { PageData } from './$types';
+	import SubmitAi from '../components/Forms/SubmitAI.svelte';
+	import ToolGrid from '../components/Home/ToolGrid.svelte';
+	import type { PageData, ActionData } from './$types';
 
+	export let form: ActionData;
 	export let data: PageData;
-	let { tools } = data;
-	$: ({ tools } = data);
 
-	let randomImages = [...tools].sort(() => 0.5 - Math.random()).slice(0, 5);
+	const { tools } = data;
 </script>
 
-<section class="min-h-screen">
-	{#each tools as tool}
-		<ToolCard {tool} />
-	{/each}
-</section>
+<h1 class="mx-auto mb-24 w-fit text-center font-display text-5xl font-bold">
+	Created By humans, <br /> Summarized by AI
+</h1>
+<ToolGrid {tools} />
+<SubmitAi {form} />

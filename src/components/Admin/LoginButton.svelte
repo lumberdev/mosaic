@@ -2,4 +2,4 @@
 	export let buttonLabel: string;
 </script>
 
-<button type="submit" class="rounded-lg bg-blue-500 py-4 px-16 text-white">{buttonLabel}</button>
+<button type="submit" class="c-btn-submit">{buttonLabel}</button>

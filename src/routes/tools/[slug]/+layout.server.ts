@@ -7,10 +7,9 @@ export async function load({ params }: { params: { slug: string } }) {
 	if (error || !data) {
 		throw svelteError(404, { message: 'Not found' });
 	}
-
 	const [tool] = data;
 
 	return {
-		tool
+		tool,
 	};
 }

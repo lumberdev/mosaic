@@ -39,11 +39,11 @@ export const actions: Actions = {
 		if (error) {
 			if (error instanceof AuthApiError && error.status === 400) {
 				return svelteError(400, {
-					message: 'Invalid credentials.'
+					message: 'Invalid credentials.',
 				});
 			}
 			return svelteError(500, {
-				message: 'Server error. Try again later.'
+				message: 'Server error. Try again later.',
 			});
 		}
 
@@ -71,12 +71,22 @@ export const actions: Actions = {
 		const url = data.get('url')?.toString();
 		const description = data.get('description')?.toString();
 		const tags = data.get('tags')?.toString().split(', ');
+		const image = data.get('image') as File;
+		let imagePath = '';
 
 		if (!slug || !name || !url) throw new Error('Missing data');
 
+		if (image) {
+			const { data, error } = await supabaseClient.storage
+				.from('tools-images')
+				.upload(image.name, image);
+
+			if (data?.path) imagePath = data.path;
+		}
+
 		const { error: insertToolError, status } = await supabaseClient
 			.from('tools')
-			.insert({ name, slug, url, description, tags });
+			.insert({ name, slug, url, description, tags, featured_image: imagePath });
 
 		if (insertToolError) {
 			throw svelteError(422, insertToolError.message);
@@ -85,5 +95,5 @@ export const actions: Actions = {
 		if (status === 201) {
 			throw redirect(303, `/tools/${slug}`);
 		}
-	}
+	},
 };

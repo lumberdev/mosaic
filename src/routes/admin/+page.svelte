@@ -18,5 +18,5 @@
 {:else if isNewUser}
 	<SignUp {flipIsNewUser} {isNewUser} />
 {:else}
-	<SignIn {flipIsNewUser} {isNewUser} />
+	<SignIn />
 {/if}

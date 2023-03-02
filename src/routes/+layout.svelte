@@ -1,13 +1,16 @@
 <script>
 	import '../app.css';
-	import '@fontsource/unbounded';
+	import '@fontsource/silkscreen';
+	import '@fontsource/spline-sans';
 	import { supabase } from '$lib/supabase';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import Header from '../components/Layout/Header.svelte';
+	import Footer from '../components/Layout/Footer.svelte';
 
 	onMount(() => {
 		const {
-			data: { subscription }
+			data: { subscription },
 		} = supabase.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
 		});
@@ -17,9 +20,13 @@
 	});
 </script>
 
-<header class="flex flex-col items-center justify-center py-16 lg:py-24">
-	<h1 class="mb-8 text-6xl font-semibold uppercase lg:text-9xl"><a href="/">Mosaic</a></h1>
-	<p class="tracking-normal lg:text-4xl">Navigating the world of AI</p>
-</header>
+<svelte:head>
+	<title>Mosaic | The AI Aggregator</title>
+	<meta name="description" content="The AI aggregator tool, created by humans, summarized by AI" />
+</svelte:head>
 
-<slot />
+<main class="my-8 mx-4 min-h-screen md:mx-12">
+	<Header />
+	<slot />
+	<Footer />
+</main>

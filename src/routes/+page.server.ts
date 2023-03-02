@@ -1,32 +1,34 @@
 import { supabase } from '$lib/supabase';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
-import { error as svelteError, type Actions } from '@sveltejs/kit';
+import { error as svelteError } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from './$types';
 
-export const load = async () => {
+export const load = (async () => {
 	const { data: tools, error } = await supabase.from('tools').select('*');
 	if (error) throw svelteError(500, { ...error });
-
 	return {
 		tools,
 	};
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
 	submitTool: async (event) => {
 		const { request } = event;
 
 		const { supabaseClient } = await getSupabase(event);
 
-		const data = await request.formData();
+		const formData = await request.formData();
 
-		const url = data.get('url') as string;
-		const email = data.get('email') as string;
+		const url = formData.get('url') as string;
+		const email = formData.get('email') as string;
 
-		const {
-			error,
-			status,
-			data: res,
-		} = await supabaseClient.from('submitted_tools').insert({ url, user_email: email });
-		console.log(error, status, res);
+		const { error, status } = await supabaseClient
+			.from('submitted_tools')
+			.insert({ url, user_email: email });
+
+		if (error) throw svelteError(500, { ...error });
+		if (status === 201) return { success: true };
+
+		return { success: false };
 	},
-};
+} satisfies Actions;

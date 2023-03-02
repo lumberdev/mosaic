@@ -1,8 +1,13 @@
-<script>
+<script lang="ts">
 	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 	import SubmitAi from '../../../components/Forms/SubmitAI.svelte';
 
-	export let data;
+	import type { ActionData } from '../../$types'; //Submit tool Action is set at the root
+	import type { PageData } from './$types';
+
+	export let form: ActionData;
+	export let data: PageData;
+
 	const { tool } = data;
 	const { name, description, url, image, featured_image } = tool;
 	const pricing = 'free';
@@ -31,5 +36,5 @@
 	</div>
 </section>
 <section>
-	<SubmitAi />
+	<SubmitAi {form} />
 </section>

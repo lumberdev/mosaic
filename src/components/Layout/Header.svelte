@@ -6,7 +6,6 @@
 	const { route } = $page;
 	const isAdmin = /admin/i.test(route.id!);
 	const buttonLabel = isAdmin ? 'Back to Home' : 'Submit an AI';
-	console.log($page);
 </script>
 
 <header

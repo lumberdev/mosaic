@@ -3,6 +3,12 @@
 	export let placeholder: string;
 	export let id: string;
 	export let name: string;
+	export let value: string | number = '';
+
+	const handleInput = (e: Event) => {
+		if (e.target instanceof HTMLInputElement)
+			value = type.match(/^(number|range)$/) ? +e.target.value : e.target.value;
+	};
 </script>
 
 <input
@@ -10,4 +16,5 @@
 	{type}
 	{placeholder}
 	{id}
-	{name} />
+	{name}
+	on:input={handleInput} />

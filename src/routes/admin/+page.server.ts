@@ -53,15 +53,23 @@ export const actions: Actions = {
 		const url = data.get('url') as string;
 		const description = data.get('description') as string;
 		const tags = data.get('tags')?.toString().split(', ');
+		const uploadImage = data.get('uploadImage')?.toString();
+		const path = data.get('imagePath')?.toString();
 		const image = data.get('image') as File;
-		let imagePath = '';
 
+		let imagePath = '';
 		if (!slug || !name || !url) throw svelteError(400, 'Missing data');
 
-		if (image) {
-			const { data } = await supabaseClient.storage.from('tools-images').upload(image.name, image);
+		if (uploadImage === 'true') {
+			if (image) {
+				const { data } = await supabaseClient.storage
+					.from('tools-images')
+					.upload(image.name, image);
 
-			if (data?.path) imagePath = data.path;
+				if (data?.path) imagePath = data.path;
+			}
+		} else if (uploadImage === 'false') {
+			if (path) imagePath = path;
 		}
 
 		const { error: insertToolError, status } = await supabaseClient

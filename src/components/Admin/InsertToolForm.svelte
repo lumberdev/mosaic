@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { DANGEROUSLY_PUBLIC_openai } from '../../utils/public-openai';
+	import { parse } from 'node-html-parser';
 
 	let generationMethod = 'cached-content';
 	let url = '';
@@ -10,6 +11,10 @@
 	let file: FileList;
 
 	let isLoading = false;
+
+	let uploadImage = false;
+	let imageUrl = '';
+	let imagePath = '';
 
 	const generateContent = async () => {
 		isLoading = true;
@@ -39,13 +44,16 @@
 				: null;
 
 		const prompt = !site
-			? `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of this website: ${url}`
-			: `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of this:\n${site?.textContent}`;
+			? `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of the purpose of this website: ${url}`
+			: generationMethod === 'meta'
+			? `Given this JSON structure:\n{ "name": "", "tags": [] }\nProvide a JSON object with name and 5 catchy tags for this website content: ${site?.textContent}`
+			: `Given this JSON structure:\n{ "name": "", "summary": "" "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of the purpose of this website's content:\n${site?.textContent}`;
 
 		const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
 			model: 'text-davinci-003',
 			prompt,
 			max_tokens: 500,
+			temperature: 0.7,
 		});
 		const [completion] = openAiResponse.data.choices ?? [];
 		const data = completion?.text
@@ -53,8 +61,29 @@
 			: null;
 
 		name = data?.name || '';
-		description = data?.summary || '';
 		tags = data?.tags?.join(', ') || '';
+
+		if (generationMethod !== 'meta') {
+			description = data?.summary || '';
+		} else {
+			const root = parse(site.html);
+			const descriptionMeta = root.querySelector('head meta[name="description"]');
+			description = descriptionMeta?.getAttribute('content') ?? '';
+		}
+
+		isLoading = false;
+	};
+
+	const generateImage = async () => {
+		isLoading = true;
+		const params = new URLSearchParams();
+		params.set('url', url);
+		params.set('name', name);
+		const response = await fetch(`/api/take-screenshot?${params.toString()}`);
+		const completion = await response.json();
+
+		imageUrl = completion?.imageUrl || '';
+		imagePath = completion?.path || '';
 		isLoading = false;
 	};
 </script>
@@ -85,6 +114,11 @@
 			<label class="rounded border-3 border-black bg-white px-5 py-4">
 				<input type="radio" bind:group={generationMethod} name="method" value="content" />
 				<span>Website's Content</span>
+			</label>
+
+			<label class="rounded border-3 border-black bg-white px-5 py-4">
+				<input type="radio" bind:group={generationMethod} name="method" value="meta" />
+				<span>Website Meta Tag</span>
 			</label>
 
 			<label class="rounded border-3 border-black bg-white px-5 py-4">
@@ -141,10 +175,41 @@
 		<input class="c-field-input" type="name" name="tags" bind:value={tags} />
 	</label>
 
-	<label class="c-field w-full">
-		<span class="c-field-label">Featured Image</span>
-		<input type="file" class="c-field-input" name="image" bind:value={file} required />
-	</label>
+	<div class="flex gap-4">
+		<label class="c-field">
+			<span class="c-field-label">Upload Image</span>
+			<input type="radio" name="uploadImage" bind:group={uploadImage} value={true} />
+		</label>
+		<label class="c-field">
+			<span class="c-field-label">Generate Image</span>
+			<input type="radio" name="uploadImage" bind:group={uploadImage} value={false} />
+		</label>
+	</div>
+
+	{#if uploadImage}
+		<label class="c-field w-full">
+			<span class="c-field-label">Featured Image</span>
+			<input type="file" class="c-field-input" name="image" bind:value={file} required />
+		</label>
+	{:else}
+		<button type="button" class="c-btn-submit mb-4 w-full" on:click={generateImage}
+			>Generate Image</button>
+		{#if imageUrl}
+			<img src={imageUrl} alt={`${url}\'s screenshot`} class="w-full" />
+			<label class="c-field w-full">
+				<span class="c-field-label">Featured Image Path</span>
+				<input
+					type="text"
+					class="c-field-input"
+					name="imagePath"
+					bind:value={imagePath}
+					required
+					readonly />
+			</label>
+		{/if}
+	{/if}
 
 	<button type="submit" class="c-btn-submit w-full">Submit</button>
 </form>
+
+<!-- https://qgynrzoywcnqzqkulybg.supabase.co/storage/v1/object/public/tools-images/More_thoughtfully_crafted_features_for_Gmail.png -->

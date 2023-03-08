@@ -66,7 +66,7 @@ export const actions: Actions = {
 			throw svelteError(403, 'Not authorized');
 		}
 		const data = await request.formData();
-		console.log(data);
+
 		const slug = data.get('name')?.toString().toLowerCase().replace(/\s/g, '-');
 		const name = data.get('name')?.toString();
 		const url = data.get('url')?.toString();
@@ -75,8 +75,7 @@ export const actions: Actions = {
 		const uploadImage = data.get('uploadImage')?.toString();
 		const path = data.get('imagePath')?.toString();
 		const image = data.get('image') as File;
-		console.log('path', path);
-		console.log('uploadImage', uploadImage);
+
 		let imagePath = '';
 
 		if (!slug || !name || !url) throw new Error('Missing data');

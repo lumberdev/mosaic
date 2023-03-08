@@ -2,13 +2,16 @@ import { supabase } from '$lib/supabase';
 import { sanitizeString } from '../../../utils/sanitize-string';
 import type { RequestHandler } from './$types';
 import { chromium } from '@playwright/test';
-import { error as svelteError } from '@sveltejs/kit';
+import { json, error as svelteError } from '@sveltejs/kit';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+
+const storageUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/tools-images/`;
 
 export const GET: RequestHandler = async ({ url }) => {
 	const toolUrl = url.searchParams.get('url');
 	const toolName = url.searchParams.get('name');
 
-	if (!toolUrl) throw new Error('Missing tool url');
+	if (!toolUrl) throw svelteError(422, 'Missing tool url');
 
 	const fileName = toolName
 		? `${sanitizeString(toolName, '_')}.png`
@@ -25,8 +28,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		contentType: 'image/png',
 	});
 	if (error) throw svelteError(500, { ...error });
-	if (data) {
-		return new Response('Upload successful', { status: 201, headers: { Location: data.path } });
-	}
+	if (data?.path) return json({ imageUrl: `${storageUrl}${data.path}`, path: data.path });
+
 	return new Response('Upload failed', { status: 500 });
 };

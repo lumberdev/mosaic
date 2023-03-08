@@ -66,22 +66,30 @@ export const actions: Actions = {
 			throw svelteError(403, 'Not authorized');
 		}
 		const data = await request.formData();
+		console.log(data);
 		const slug = data.get('name')?.toString().toLowerCase().replace(/\s/g, '-');
 		const name = data.get('name')?.toString();
 		const url = data.get('url')?.toString();
 		const description = data.get('description')?.toString();
 		const tags = data.get('tags')?.toString().split(', ');
+		const uploadImage = data.get('uploadImage')?.toString();
+		const path = data.get('imagePath')?.toString();
 		const image = data.get('image') as File;
+		console.log('path', path);
+		console.log('uploadImage', uploadImage);
 		let imagePath = '';
 
 		if (!slug || !name || !url) throw new Error('Missing data');
+		if (uploadImage === 'true') {
+			if (image) {
+				const { data } = await supabaseClient.storage
+					.from('tools-images')
+					.upload(image.name, image);
 
-		if (image) {
-			const { data, error } = await supabaseClient.storage
-				.from('tools-images')
-				.upload(image.name, image);
-
-			if (data?.path) imagePath = data.path;
+				if (data?.path) imagePath = data.path;
+			}
+		} else if (uploadImage === 'false') {
+			if (path) imagePath = path;
 		}
 
 		const { error: insertToolError, status } = await supabaseClient

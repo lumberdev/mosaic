@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { DANGEROUSLY_PUBLIC_openai } from '../../utils/public-openai';
+	import { parse } from 'node-html-parser';
 
 	let generationMethod = 'cached-content';
 	let url = '';
@@ -39,13 +40,16 @@
 				: null;
 
 		const prompt = !site
-			? `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of this website: ${url}`
-			: `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of this:\n${site?.textContent}`;
+			? `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of the purpose of this website: ${url}`
+			: generationMethod === 'meta'
+			? `Given this JSON structure:\n{ "name": "", "tags": [] }\nProvide a JSON object with name and 5 catchy tags for this website content: ${site?.textContent}`
+			: `Given this JSON structure:\n{ "name": "", "summary": "" "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of the purpose of this website's content:\n${site?.textContent}`;
 
 		const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
 			model: 'text-davinci-003',
 			prompt,
 			max_tokens: 500,
+			temperature: 0.7,
 		});
 		const [completion] = openAiResponse.data.choices ?? [];
 		const data = completion?.text
@@ -53,8 +57,16 @@
 			: null;
 
 		name = data?.name || '';
-		description = data?.summary || '';
 		tags = data?.tags?.join(', ') || '';
+
+		if (generationMethod !== 'meta') {
+			description = data?.summary || '';
+		} else {
+			const root = parse(site.html);
+			const descriptionMeta = root.querySelector('head meta[name="description"]');
+			description = descriptionMeta?.getAttribute('content') ?? '';
+		}
+
 		isLoading = false;
 	};
 </script>
@@ -85,6 +97,11 @@
 			<label class="rounded border-3 border-black bg-white px-5 py-4">
 				<input type="radio" bind:group={generationMethod} name="method" value="content" />
 				<span>Website's Content</span>
+			</label>
+
+			<label class="rounded border-3 border-black bg-white px-5 py-4">
+				<input type="radio" bind:group={generationMethod} name="method" value="meta" />
+				<span>Website Meta Tag</span>
 			</label>
 
 			<label class="rounded border-3 border-black bg-white px-5 py-4">

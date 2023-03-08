@@ -12,6 +12,10 @@
 
 	let isLoading = false;
 
+	let uploadImage = false;
+	let imageUrl = '';
+	let imagePath = '';
+
 	const generateContent = async () => {
 		isLoading = true;
 		const params = new URLSearchParams();
@@ -67,6 +71,19 @@
 			description = descriptionMeta?.getAttribute('content') ?? '';
 		}
 
+		isLoading = false;
+	};
+
+	const generateImage = async () => {
+		isLoading = true;
+		const params = new URLSearchParams();
+		params.set('url', url);
+		params.set('name', name);
+		const response = await fetch(`/api/take-screenshot?${params.toString()}`);
+		const completion = await response.json();
+
+		imageUrl = completion?.imageUrl || '';
+		imagePath = completion?.path || '';
 		isLoading = false;
 	};
 </script>
@@ -158,10 +175,41 @@
 		<input class="c-field-input" type="name" name="tags" bind:value={tags} />
 	</label>
 
-	<label class="c-field w-full">
-		<span class="c-field-label">Featured Image</span>
-		<input type="file" class="c-field-input" name="image" bind:value={file} required />
-	</label>
+	<div class="flex gap-4">
+		<label class="c-field">
+			<span class="c-field-label">Upload Image</span>
+			<input type="radio" name="uploadImage" bind:group={uploadImage} value={true} />
+		</label>
+		<label class="c-field">
+			<span class="c-field-label">Generate Image</span>
+			<input type="radio" name="uploadImage" bind:group={uploadImage} value={false} />
+		</label>
+	</div>
+
+	{#if uploadImage}
+		<label class="c-field w-full">
+			<span class="c-field-label">Featured Image</span>
+			<input type="file" class="c-field-input" name="image" bind:value={file} required />
+		</label>
+	{:else}
+		<button type="button" class="c-btn-submit mb-4 w-full" on:click={generateImage}
+			>Generate Image</button>
+		{#if imageUrl}
+			<img src={imageUrl} alt={`${url}\'s screenshot`} class="w-full" />
+			<label class="c-field w-full">
+				<span class="c-field-label">Featured Image Path</span>
+				<input
+					type="text"
+					class="c-field-input"
+					name="imagePath"
+					bind:value={imagePath}
+					required
+					readonly />
+			</label>
+		{/if}
+	{/if}
 
 	<button type="submit" class="c-btn-submit w-full">Submit</button>
 </form>
+
+<!-- https://qgynrzoywcnqzqkulybg.supabase.co/storage/v1/object/public/tools-images/More_thoughtfully_crafted_features_for_Gmail.png -->

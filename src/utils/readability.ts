@@ -10,7 +10,7 @@ const getCachedHTML = (url: string) => {
 	return axios({
 		method: 'get',
 		url: googleWebcachePrefix + url,
-		headers: { 'User-Agent': userAgent }
+		headers: { 'User-Agent': userAgent },
 	})
 		.then((res) => {
 			return res.data;
@@ -20,7 +20,7 @@ const getCachedHTML = (url: string) => {
 				return axios({
 					method: 'get',
 					url: url,
-					headers: { 'User-Agent': userAgent }
+					headers: { 'User-Agent': userAgent },
 				}).then((res) => {
 					if (res.status == 200) {
 						return res.data;
@@ -34,7 +34,7 @@ const getHTML = (url: string) => {
 	return axios({
 		method: 'get',
 		url: url,
-		headers: { 'User-Agent': userAgent }
+		headers: { 'User-Agent': userAgent },
 	}).then((res) => {
 		if (res.status == 200) {
 			return res.data;
@@ -45,11 +45,12 @@ const getHTML = (url: string) => {
 export default async (args: { url: string; html?: string; useCache?: boolean }) => {
 	const url = args.url;
 	const html = args.html || args.useCache === false ? await getHTML(url) : await getCachedHTML(url);
+
 	if (html) {
 		const doc = new JSDOM(html, { url });
 		const reader = new Readability(doc.window.document);
 		const article = reader.parse();
 
-		return article;
+		return { ...article, html };
 	}
 };

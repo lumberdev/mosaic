@@ -20,11 +20,11 @@ export const actions: Actions = {
 
 		if (error) {
 			if (error instanceof AuthApiError && error.status === 400) {
-				return svelteError(400, {
+				throw svelteError(400, {
 					message: 'Invalid credentials.',
 				});
 			}
-			return svelteError(500, {
+			throw svelteError(500, {
 				message: 'Server error. Try again later.',
 			});
 		}

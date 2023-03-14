@@ -1,9 +1,10 @@
 import { supabase } from '$lib/supabase';
 import { sanitizeString } from '../../../utils/sanitize-string';
 import type { RequestHandler } from './$types';
-import { chromium } from '@playwright/test';
 import { json, error as svelteError } from '@sveltejs/kit';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+
+import playwright from 'playwright-aws-lambda';
 
 const storageUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/tools-images/`;
 
@@ -17,7 +18,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		? `${sanitizeString(toolName, '_')}.png`
 		: `${sanitizeString(toolUrl)}.png`;
 
-	const browser = await chromium.launch();
+	const browser = await playwright.launchChromium();
 	const context = await browser.newContext();
 	const page = await context.newPage();
 	await page.goto(toolUrl);

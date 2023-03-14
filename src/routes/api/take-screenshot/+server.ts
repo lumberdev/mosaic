@@ -3,7 +3,9 @@ import { sanitizeString } from '../../../utils/sanitize-string';
 import type { RequestHandler } from './$types';
 import { json, error as svelteError } from '@sveltejs/kit';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { NODE_ENV } from '$env/static/private';
 
+import { chromium } from '@playwright/test';
 import playwright from 'playwright-aws-lambda';
 
 const storageUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/tools-images/`;
@@ -17,13 +19,27 @@ export const GET: RequestHandler = async ({ url }) => {
 	const fileName = toolName
 		? `${sanitizeString(toolName, '_')}.png`
 		: `${sanitizeString(toolUrl)}.png`;
+	let browser = null;
+	let buffer = null;
+	try {
+		if (NODE_ENV === 'development') {
+			browser = await chromium.launch();
+		} else {
+			browser = await playwright.launchChromium();
+		}
+		const context = await browser.newContext();
+		const page = await context.newPage();
+		await page.goto(toolUrl);
+		buffer = await page.screenshot();
+	} catch (error) {
+		console.error(error);
+		throw svelteError(
+			500,
+			'Could not take screenshot. Please try again later or contact us if the problem persists.'
+		);
+	}
 
-	const browser = await playwright.launchChromium();
-	const context = await browser.newContext();
-	const page = await context.newPage();
-	await page.goto(toolUrl);
-	const buffer = await page.screenshot();
-	await browser.close();
+	if (browser) await browser.close();
 
 	const { data, error } = await supabase.storage.from('tools-images').upload(fileName, buffer, {
 		contentType: 'image/png',

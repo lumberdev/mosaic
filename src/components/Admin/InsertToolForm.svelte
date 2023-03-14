@@ -44,10 +44,36 @@
 				: null;
 
 		const prompt = !site
-			? `Given this JSON structure:\n{ "name": "", "summary": "", "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of the purpose of this website: ${url}`
+			? `{${url}}
+
+      a summary of the purpose of the tool described by the website above as a JSON object that looks like this
+      "{
+      "name": "Name of tool",
+      "summary": "string",
+      "tags": "[Array of 5 tags describing the purpose of the tool]"
+      }":
+
+      {`
 			: generationMethod === 'meta'
-			? `Given this JSON structure:\n{ "name": "", "tags": [] }\nProvide a JSON object with name and 5 catchy tags for this website content: ${site?.textContent}`
-			: `Given this JSON structure:\n{ "name": "", "summary": "" "tags": [] }\nProvide a JSON object with the name, 5 catchy tags and a brief summary of the purpose of this website's content:\n${site?.textContent}`;
+			? `{${site?.textContent}}
+
+      summary of the tool described by the text above as a JSON object that looks like this
+      "{
+      "name": "Name of tool",
+      "tags": "[Array of 5 tags describing the purpose of the tool]"
+      }":
+
+      {`
+			: `{${site?.textContent}}
+
+      a summary of the purpose of the tool described by the text above as a JSON object that looks like this
+      "{
+      "name": "Name of tool",
+      "summary": "string",
+      "tags": "[Array of 5 tags describing the purpose of the tool]"
+      }":
+
+      {`;
 
 		const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
 			model: 'text-davinci-003',
@@ -57,7 +83,11 @@
 		});
 		const [completion] = openAiResponse.data.choices ?? [];
 		const data = completion?.text
-			? JSON.parse(String(completion.text).trim().replace(/\n/g, ''))
+			? JSON.parse(
+					String('{' + completion.text)
+						.trim()
+						.replace(/\n/g, '')
+			  )
 			: null;
 
 		name = data?.name || '';

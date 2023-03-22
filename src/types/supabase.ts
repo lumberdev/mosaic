@@ -9,6 +9,29 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      submitted_tools: {
+        Row: {
+          created_at: string | null
+          id: number
+          is_added: boolean
+          url: string
+          user_email: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          is_added?: boolean
+          url: string
+          user_email?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          is_added?: boolean
+          url?: string
+          user_email?: string | null
+        }
+      }
       tools: {
         Row: {
           created_at: string | null

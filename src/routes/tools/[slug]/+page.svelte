@@ -10,7 +10,7 @@
 
 	const { tool } = data;
 	const { name, description, url, featured_image } = tool;
-	const pricing = 'unknown';
+	// const pricing = 'unknown';
 	const image_url =
 		PUBLIC_SUPABASE_URL + '/storage/v1/object/public/tools-images/' + featured_image;
 </script>
@@ -27,7 +27,7 @@
 			<a class="font-display" target="_blank" rel="noreferrer noopener" href={url}>{url}</a>
 		</div>
 		<p>{description}</p>
-		<p class="font-display">Pricing: <span>{pricing}</span></p>
+		<!-- <p class="font-display">Pricing: <span>{pricing}</span></p> -->
 		<div
 			class="absolute top-0 right-0 -z-10 grid h-full w-full rounded border-3 border-black bg-white md:w-[calc(100%+52%)]">
 			<div class="h-12 w-full self-end bg-black" />

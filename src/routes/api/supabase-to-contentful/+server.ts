@@ -7,6 +7,7 @@ import { json, error as svelteError } from '@sveltejs/kit';
 const supabaseBucket =
 	'https://qgynrzoywcnqzqkulybg.supabase.co/storage/v1/object/public/tools-images/';
 
+// this most likely won't work in production due to function timeout
 export const GET: RequestHandler = async () => {
 	// fetch all tools from supabase
 	const { data, error } = await supabase.from('tools').select('*');

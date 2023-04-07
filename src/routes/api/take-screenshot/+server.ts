@@ -1,14 +1,11 @@
-import { supabase } from '$lib/supabase';
 import { sanitizeString } from '../../../utils/sanitize-string';
 import type { RequestHandler } from './$types';
 import { json, error as svelteError } from '@sveltejs/kit';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { NODE_ENV } from '$env/static/private';
 
 import { chromium } from '@playwright/test';
 import playwright from 'playwright-aws-lambda';
-
-const storageUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/tools-images/`;
+import { uploadImage } from '$lib/contentful';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const toolUrl = url.searchParams.get('url');
@@ -19,12 +16,16 @@ export const GET: RequestHandler = async ({ url }) => {
 	const fileName = toolName
 		? `${sanitizeString(toolName, '_')}.png`
 		: `${sanitizeString(toolUrl)}.png`;
+
+	// Use playwright to take screenshot
 	let browser = null;
 	let buffer = null;
 	try {
 		if (NODE_ENV === 'development') {
+			// in development, use playwright to launch chromium
 			browser = await chromium.launch();
 		} else {
+			// in production, use playwright-aws-lambda to launch chromium
 			browser = await playwright.launchChromium();
 		}
 		const context = await browser.newContext();
@@ -33,19 +34,21 @@ export const GET: RequestHandler = async ({ url }) => {
 		buffer = await page.screenshot();
 	} catch (error) {
 		console.error(error);
-		throw svelteError(
-			500,
-			'Could not take screenshot. Please try again later or contact us if the problem persists.'
-		);
+		throw svelteError(500, 'Could not take screenshot.');
 	}
-
 	if (browser) await browser.close();
 
-	const { data, error } = await supabase.storage.from('tools-images').upload(fileName, buffer, {
-		contentType: 'image/png',
-	});
-	if (error) throw svelteError(500, { ...error });
-	if (data?.path) return json({ imageUrl: `${storageUrl}${data.path}`, path: data.path });
+	// Upload image to Contentful
+	let asset = null;
+	try {
+		asset = await uploadImage(buffer, fileName);
+	} catch (error) {
+		console.error(error);
+		throw svelteError(500, { message: 'Upload failed' });
+	}
 
-	return new Response('Upload failed', { status: 500 });
+	if (asset) {
+		console.log('asset', asset.fields.file);
+		return json({ asset });
+	} else throw svelteError(500, { message: 'Upload failed' });
 };

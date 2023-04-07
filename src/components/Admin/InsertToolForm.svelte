@@ -15,6 +15,7 @@
 	let uploadImage = false;
 	let imageUrl = '';
 	let imagePath = '';
+	let imageId = '';
 
 	const generateContent = async () => {
 		isLoading = true;
@@ -112,8 +113,8 @@
 		const response = await fetch(`/api/take-screenshot?${params.toString()}`);
 		const completion = await response.json();
 
-		imageUrl = completion?.imageUrl || '';
-		imagePath = completion?.path || '';
+		imageId = completion?.asset.sys.id ?? '';
+		imageUrl = completion?.asset.fields.file['en-US'].url ?? '';
 		isLoading = false;
 	};
 </script>
@@ -223,8 +224,11 @@
 				<input type="file" class="c-field-input" name="image" bind:value={file} required />
 			</label>
 		{:else}
-			<button type="button" class="c-btn-submit mb-4 w-full" on:click={generateImage}
-				>Generate Image</button>
+			<button
+				type="button"
+				disabled={isLoading}
+				class="c-btn-submit mb-4 w-full"
+				on:click={generateImage}>Generate Image</button>
 			{#if imageUrl}
 				<img src={imageUrl} alt={`${url}\'s screenshot`} class="w-full max-w-3xl" />
 				<label class="c-field w-full">
@@ -232,8 +236,8 @@
 					<input
 						type="text"
 						class="c-field-input"
-						name="imagePath"
-						bind:value={imagePath}
+						name="imageId"
+						bind:value={imageId}
 						required
 						readonly />
 				</label>

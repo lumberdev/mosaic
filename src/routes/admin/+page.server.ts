@@ -3,6 +3,7 @@ import type { Actions } from './$types';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import { toSlug } from '../../utils/to-slug';
+import { createEntry } from '$lib/contentful';
 
 export const actions: Actions = {
 	signIn: async (event) => {
@@ -54,10 +55,11 @@ export const actions: Actions = {
 		const description = data.get('description') as string;
 		const tags = data.get('tags')?.toString().split(', ');
 		const uploadImage = data.get('uploadImage')?.toString();
-		const path = data.get('imagePath')?.toString();
+		const imageId = data.get('imageId')?.toString();
 		const image = data.get('image') as File;
 
 		let imagePath = '';
+		let id = '';
 		if (!slug || !name || !url) throw svelteError(400, 'Missing data');
 
 		if (uploadImage === 'true') {
@@ -69,19 +71,41 @@ export const actions: Actions = {
 				if (data?.path) imagePath = data.path;
 			}
 		} else if (uploadImage === 'false') {
-			if (path) imagePath = path;
+			if (imageId) id = imageId;
 		}
-
-		const { error: insertToolError, status } = await supabaseClient
-			.from('tools')
-			.insert({ name, slug, url, description, tags, featured_image: imagePath });
-
-		if (insertToolError) {
-			throw svelteError(422, insertToolError.message);
+		let entry = null;
+		try {
+			entry = await createEntry('tool', {
+				name: {
+					'en-US': name,
+				},
+				slug: {
+					'en-US': slug,
+				},
+				url: {
+					'en-US': url,
+				},
+				description: {
+					'en-US': description,
+				},
+				tags: {
+					'en-US': tags,
+				},
+				featuredImage: {
+					'en-US': {
+						sys: {
+							type: 'Link',
+							linkType: 'Asset',
+							id,
+						},
+					},
+				},
+			});
+		} catch (error) {
+			console.log(error);
+			throw svelteError(422, { message: 'Error creating entry' });
 		}
-
-		if (status === 201) {
-			throw redirect(303, `/tools/${slug}`);
-		}
+		console.log(entry);
+		if (entry) throw redirect(303, `/tools/${slug}`);
 	},
 };

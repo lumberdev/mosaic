@@ -74,25 +74,26 @@ export const actions: Actions = {
 			if (imageId) id = imageId;
 		}
 		let entry = null;
+		const locale = 'en-US';
 		try {
 			entry = await createEntry('tool', {
 				name: {
-					'en-US': name,
+					[locale]: name,
 				},
 				slug: {
-					'en-US': slug,
+					[locale]: slug,
 				},
 				url: {
-					'en-US': url,
+					[locale]: url,
 				},
 				description: {
-					'en-US': description,
+					[locale]: description,
 				},
 				tags: {
-					'en-US': tags,
+					[locale]: tags,
 				},
 				featuredImage: {
-					'en-US': {
+					[locale]: {
 						sys: {
 							type: 'Link',
 							linkType: 'Asset',

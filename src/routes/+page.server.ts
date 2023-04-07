@@ -1,11 +1,40 @@
-import { supabase } from '$lib/supabase';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { error as svelteError } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { contentfulFetch } from '$lib/contentful';
+
+const query = `
+{
+  toolGalleryCollection(where: { slug: "main" }, limit: 1) {
+    items {
+      name
+      slug
+      toolsCollection {
+        items {
+          name
+          slug
+          url
+          description
+          tags
+          featuredImage {
+            title
+            description
+            url
+          }
+        }
+      }
+    }
+  }
+}
+`;
 
 export const load = (async () => {
-	const { data: tools, error } = await supabase.from('tools').select('*');
-	if (error) throw svelteError(500, { ...error });
+	const response = await contentfulFetch(query);
+
+	if (!response.ok) throw svelteError(404, { message: response.statusText });
+
+	const { data } = await response.json();
+	const tools = data.toolGalleryCollection.items[0].toolsCollection.items ?? [];
 	return {
 		tools,
 	};

@@ -3,7 +3,7 @@ import {
 	CONTENTFUL_ACCESS_TOKEN,
 	CONTENTFUL_MANAGEMENT_TOKEN,
 } from '$env/static/private';
-import { createClient } from 'contentful-management';
+import mgmt from 'contentful-management';
 export async function contentfulFetch(query: string) {
 	const url = `https://graphql.contentful.com/content/v1/spaces/${CONTENTFUL_SPACE_ID}`;
 
@@ -19,7 +19,7 @@ export async function contentfulFetch(query: string) {
 	return response;
 }
 
-export const contentfulClient = createClient({
+export const contentfulClient = mgmt.createClient({
 	accessToken: CONTENTFUL_MANAGEMENT_TOKEN,
 	space: CONTENTFUL_SPACE_ID,
 });

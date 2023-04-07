@@ -1,12 +1,8 @@
 <script lang="ts">
-	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-	import type { Tool } from '../../types';
 	import Arrow from '../SVG/Arrow.svelte';
-	export let tool: Tool;
+	export let tool;
 
-	const { name, featured_image, slug, description } = tool;
-	$: image_url = PUBLIC_SUPABASE_URL + '/storage/v1/object/public/tools-images/' + featured_image;
-
+	const { name, featuredImage, slug, description } = tool;
 	const shortDescription = description?.split(' ').slice(0, 20).join(' ') + '...';
 </script>
 
@@ -18,7 +14,10 @@
 			<span class="font-display" />
 			<Arrow className="[&_path]:group-hover:fill-white" />
 		</div>
-		<img class="aspect-video w-full" src={image_url} alt={name} />
+		<img
+			class="aspect-video w-full"
+			src={featuredImage.url}
+			alt={featuredImage.description ?? name} />
 		<div
 			class="flex-auto rounded-b border-t-3 border-black p-5 transition-colors group-hover:bg-beige">
 			<h2 class="mb-3 text-2xl font-bold">{name}</h2>

@@ -1,13 +1,32 @@
-import { supabase } from '$lib/supabase';
+import { contentfulFetch } from '$lib/contentful';
 import { error as svelteError } from '@sveltejs/kit';
 
 export async function load({ params }: { params: { slug: string } }) {
-	const { data, error } = await supabase.from('tools').select('*').eq('slug', params.slug);
-
-	if (error || !data) {
-		throw svelteError(404, { message: 'Not found' });
+	const query = `
+	{
+		toolCollection(where: { slug: "${params.slug}" }) {
+			items {
+				name
+				slug
+				url
+				description
+				tags
+				featuredImage {
+					title
+					description
+					url
+				}
+			}
+		}
 	}
-	const [tool] = data;
+	`;
+
+	const response = await contentfulFetch(query);
+
+	if (!response.ok) throw svelteError(404, { message: response.statusText });
+
+	const { data } = await response.json();
+	const tool = data.toolCollection.items[0] ?? null;
 
 	return {
 		tool,

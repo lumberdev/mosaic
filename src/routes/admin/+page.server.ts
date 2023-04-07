@@ -3,6 +3,7 @@ import type { Actions } from './$types';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import { toSlug } from '../../utils/to-slug';
+import { createEntry } from '$lib/contentful';
 
 export const actions: Actions = {
 	signIn: async (event) => {
@@ -43,7 +44,7 @@ export const actions: Actions = {
 		/**
 		 * Protect the route with a session check
 		 */
-		const { session, supabaseClient } = await getSupabase(event);
+		const { session } = await getSupabase(event);
 
 		if (!session) throw svelteError(403, 'Not authorized');
 
@@ -53,35 +54,43 @@ export const actions: Actions = {
 		const url = data.get('url') as string;
 		const description = data.get('description') as string;
 		const tags = data.get('tags')?.toString().split(', ');
-		const uploadImage = data.get('uploadImage')?.toString();
-		const path = data.get('imagePath')?.toString();
-		const image = data.get('image') as File;
+		const imageId = data.get('imageId') as string;
 
-		let imagePath = '';
 		if (!slug || !name || !url) throw svelteError(400, 'Missing data');
 
-		if (uploadImage === 'true') {
-			if (image) {
-				const { data } = await supabaseClient.storage
-					.from('tools-images')
-					.upload(image.name, image);
-
-				if (data?.path) imagePath = data.path;
-			}
-		} else if (uploadImage === 'false') {
-			if (path) imagePath = path;
+		let entry = null;
+		const locale = 'en-US';
+		try {
+			entry = await createEntry('tool', {
+				name: {
+					[locale]: name,
+				},
+				slug: {
+					[locale]: slug,
+				},
+				url: {
+					[locale]: url,
+				},
+				description: {
+					[locale]: description,
+				},
+				tags: {
+					[locale]: tags,
+				},
+				featuredImage: {
+					[locale]: {
+						sys: {
+							type: 'Link',
+							linkType: 'Asset',
+							id: imageId,
+						},
+					},
+				},
+			});
+		} catch (error) {
+			console.log(error);
+			throw svelteError(422, { message: 'Error creating entry' });
 		}
-
-		const { error: insertToolError, status } = await supabaseClient
-			.from('tools')
-			.insert({ name, slug, url, description, tags, featured_image: imagePath });
-
-		if (insertToolError) {
-			throw svelteError(422, insertToolError.message);
-		}
-
-		if (status === 201) {
-			throw redirect(303, `/tools/${slug}`);
-		}
+		if (entry) return { success: true };
 	},
 };

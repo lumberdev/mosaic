@@ -1,22 +1,16 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import InsertToolForm from '../../components/Admin/InsertToolForm.svelte';
 	import SignIn from '../../components/Admin/SignIn.svelte';
 	import SignOut from '../../components/Admin/SignOut.svelte';
-	import SignUp from '../../components/Admin/SignUp.svelte';
+	import type { ActionData } from './$types';
 
-	let isNewUser = false;
-
-	const flipIsNewUser = () => {
-		isNewUser = !isNewUser;
-	};
+	export let form: ActionData;
 </script>
 
 {#if $page.data.session}
 	<SignOut />
-	<InsertToolForm />
-{:else if isNewUser}
-	<SignUp {flipIsNewUser} {isNewUser} />
+	<InsertToolForm {form} />
 {:else}
 	<SignIn />
 {/if}

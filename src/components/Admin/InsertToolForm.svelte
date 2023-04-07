@@ -1,36 +1,18 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import type { ActionData } from '../../routes/admin/$types';
 	import { DANGEROUSLY_PUBLIC_openai } from '../../utils/public-openai';
 	import { parse } from 'node-html-parser';
 
+	export let form: ActionData;
 	let generationMethod = 'cached-content';
 	let url = '';
 	let name = '';
 	let description = '';
 	let tags = '';
-	let file: FileList;
-
 	let isLoading = false;
-
-	let uploadImage = false;
 	let imageUrl = '';
-	let imagePath = '';
 	let imageId = '';
-
-	const generateContent = async () => {
-		isLoading = true;
-		const params = new URLSearchParams();
-		params.set('url', url);
-		params.set('generationMethod', generationMethod);
-
-		const response = await fetch(`/api/generate-content?${params.toString()}`);
-
-		const completion = await response.json();
-
-		name = completion?.name || '';
-		description = completion?.summary || '';
-		tags = completion?.tags?.join(', ') || '';
-	};
 
 	const generateContentClientSide = async () => {
 		isLoading = true;
@@ -207,43 +189,35 @@
 			<input class="c-field-input" type="name" name="tags" bind:value={tags} />
 		</label>
 
-		<div class="flex gap-4">
-			<label class="c-field">
-				<span class="c-field-label">Upload Image</span>
-				<input type="radio" name="uploadImage" bind:group={uploadImage} value={true} />
-			</label>
-			<label class="c-field">
-				<span class="c-field-label">Generate Image</span>
-				<input type="radio" name="uploadImage" bind:group={uploadImage} value={false} />
-			</label>
-		</div>
-
-		{#if uploadImage}
+		<button
+			type="button"
+			disabled={isLoading}
+			class="c-btn-submit mb-4 w-full disabled:cursor-not-allowed disabled:opacity-20"
+			on:click={generateImage}>Generate Image</button>
+		{#if imageUrl}
+			<img src={imageUrl} alt={`${url}\'s screenshot`} class="w-full max-w-3xl" />
 			<label class="c-field w-full">
-				<span class="c-field-label">Featured Image</span>
-				<input type="file" class="c-field-input" name="image" bind:value={file} required />
+				<span class="c-field-label">Featured Image Path</span>
+				<input
+					type="text"
+					class="c-field-input"
+					name="imageId"
+					bind:value={imageId}
+					required
+					readonly />
 			</label>
-		{:else}
-			<button
-				type="button"
-				disabled={isLoading}
-				class="c-btn-submit mb-4 w-full"
-				on:click={generateImage}>Generate Image</button>
-			{#if imageUrl}
-				<img src={imageUrl} alt={`${url}\'s screenshot`} class="w-full max-w-3xl" />
-				<label class="c-field w-full">
-					<span class="c-field-label">Featured Image Path</span>
-					<input
-						type="text"
-						class="c-field-input"
-						name="imageId"
-						bind:value={imageId}
-						required
-						readonly />
-				</label>
-			{/if}
 		{/if}
 
-		<button type="submit" class="c-btn-submit w-full">Submit</button>
+		<button
+			disabled={isLoading}
+			type="submit"
+			class="c-btn-submit w-full disabled:cursor-not-allowed disabled:opacity-20">Submit</button>
 	</form>
+
+	{#if form?.success}
+		<div class="mt-8">
+			<h2 class="font-display text-2xl">Success!</h2>
+			<p class="mt-4">Your submission has been added to the database.</p>
+		</div>
+	{/if}
 </div>

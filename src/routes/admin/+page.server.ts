@@ -44,7 +44,7 @@ export const actions: Actions = {
 		/**
 		 * Protect the route with a session check
 		 */
-		const { session, supabaseClient } = await getSupabase(event);
+		const { session } = await getSupabase(event);
 
 		if (!session) throw svelteError(403, 'Not authorized');
 
@@ -54,25 +54,10 @@ export const actions: Actions = {
 		const url = data.get('url') as string;
 		const description = data.get('description') as string;
 		const tags = data.get('tags')?.toString().split(', ');
-		const uploadImage = data.get('uploadImage')?.toString();
-		const imageId = data.get('imageId')?.toString();
-		const image = data.get('image') as File;
+		const imageId = data.get('imageId') as string;
 
-		let imagePath = '';
-		let id = '';
 		if (!slug || !name || !url) throw svelteError(400, 'Missing data');
 
-		if (uploadImage === 'true') {
-			if (image) {
-				const { data } = await supabaseClient.storage
-					.from('tools-images')
-					.upload(image.name, image);
-
-				if (data?.path) imagePath = data.path;
-			}
-		} else if (uploadImage === 'false') {
-			if (imageId) id = imageId;
-		}
 		let entry = null;
 		const locale = 'en-US';
 		try {
@@ -97,7 +82,7 @@ export const actions: Actions = {
 						sys: {
 							type: 'Link',
 							linkType: 'Asset',
-							id,
+							id: imageId,
 						},
 					},
 				},
@@ -106,7 +91,6 @@ export const actions: Actions = {
 			console.log(error);
 			throw svelteError(422, { message: 'Error creating entry' });
 		}
-		console.log(entry);
-		if (entry) throw redirect(303, `/tools/${slug}`);
+		if (entry) return { success: true };
 	},
 };

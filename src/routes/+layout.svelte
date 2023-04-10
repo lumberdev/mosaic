@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import Header from '../components/Layout/Header.svelte';
 	import Footer from '../components/Layout/Footer.svelte';
+	import BackLink from '../components/Layout/BackLink.svelte';
 
 	onMount(() => {
 		const {
@@ -18,11 +19,6 @@
 			subscription.unsubscribe();
 		};
 	});
-
-	let previousPage: string | null = null;
-	afterNavigate(({ from }) => {
-		previousPage = from?.url.pathname ?? previousPage;
-	});
 </script>
 
 <svelte:head>
@@ -32,10 +28,7 @@
 
 <main class="my-8 mx-4 min-h-screen md:mx-12">
 	<Header />
-	<a
-		href={previousPage}
-		class={`px-5 py-4 font-display ${!previousPage ? 'text-gray-500' : ''}`}
-		aria-disabled={!previousPage}>← Back</a>
+	<BackLink />
 	<slot />
 	<Footer />
 </main>

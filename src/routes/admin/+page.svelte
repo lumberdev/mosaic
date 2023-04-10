@@ -9,7 +9,6 @@
 </script>
 
 {#if $page.data.session}
-	<SignOut />
 	<InsertToolForm {form} />
 {:else}
 	<SignIn />

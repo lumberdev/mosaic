@@ -1,6 +1,5 @@
 <script>
 	import { enhance } from '$app/forms';
-	import LoginButton from './LoginButton.svelte';
 </script>
 
 <form method="POST" action="?/signOut" use:enhance>

@@ -63,7 +63,7 @@ export const actions: Actions = {
 			);
 		} catch (error) {
 			console.error(error);
-			throw svelteError(500, 'Server error. Try again later.');
+			throw svelteError(500, 'Server error while generating content. Try again later.');
 		}
 
 		let allContentfulEntryPromisesResolved = [];
@@ -76,7 +76,7 @@ export const actions: Actions = {
 			);
 		} catch (error) {
 			console.error(error);
-			throw svelteError(500, 'Server error. Try again later.');
+			throw svelteError(500, 'Server error while uploading content. Try again later.');
 		}
 
 		return {

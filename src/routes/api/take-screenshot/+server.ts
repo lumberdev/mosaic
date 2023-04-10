@@ -48,7 +48,6 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 
 	if (asset) {
-		console.log('asset', asset.fields.file);
 		return json({ asset });
 	} else throw svelteError(500, { message: 'Upload failed' });
 };

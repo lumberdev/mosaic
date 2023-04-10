@@ -71,3 +71,40 @@ export async function uploadImage(buffer: Buffer, fileName: string) {
 	}
 	return publishedAsset;
 }
+
+export const serializeEntry = (obj: Record<string, string>) => {
+	const locale = 'en-US';
+	return Object.entries(obj).reduce((acc, [key, value]) => {
+		if (key === 'imageId') {
+			return {
+				...acc,
+				featuredImage: {
+					[locale]: {
+						sys: {
+							type: 'Link',
+							linkType: 'Asset',
+							id: value,
+						},
+					},
+				},
+			};
+		}
+		if (key === 'imageUrl') {
+			return acc;
+		}
+		if (key === 'tags') {
+			return {
+				...acc,
+				tags: {
+					[locale]: value.split(', '),
+				},
+			};
+		}
+		return {
+			...acc,
+			[key]: {
+				[locale]: value,
+			},
+		};
+	}, {});
+};

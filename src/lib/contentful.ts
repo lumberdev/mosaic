@@ -4,6 +4,7 @@ import {
 	CONTENTFUL_MANAGEMENT_TOKEN,
 } from '$env/static/private';
 import mgmt from 'contentful-management';
+
 export async function contentfulFetch(query: string) {
 	const url = `https://graphql.contentful.com/content/v1/spaces/${CONTENTFUL_SPACE_ID}`;
 
@@ -72,7 +73,17 @@ export async function uploadImage(buffer: Buffer, fileName: string) {
 	return publishedAsset;
 }
 
-export const serializeEntry = (obj: Record<string, string>) => {
+export interface EntryArg {
+	name: string;
+	tags: string[];
+	url: string;
+	slug: string;
+	description: string;
+	imageId: string;
+	imageUrl: string;
+}
+
+export const serializeEntry = (obj: EntryArg) => {
 	const locale = 'en-US';
 	return Object.entries(obj).reduce((acc, [key, value]) => {
 		if (key === 'imageId') {

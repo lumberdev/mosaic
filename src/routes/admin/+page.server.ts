@@ -1,10 +1,9 @@
-import { fail, redirect, error as svelteError } from '@sveltejs/kit';
+import { redirect, error as svelteError } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import { toSlug } from '../../utils/to-slug';
-import { createEntry, serializeEntry } from '$lib/contentful';
-import { generateContentClientSide } from '$lib/generate-content';
+import { createEntry } from '$lib/contentful';
 
 export const actions: Actions = {
 	signIn: async (event) => {
@@ -41,51 +40,46 @@ export const actions: Actions = {
 	},
 
 	batchContent: async (event) => {
-		const { session } = await getSupabase(event);
-		if (!session) throw svelteError(403, 'Not authorized');
-		const { request } = event;
-
-		const data = await request.formData();
-		const urlsString = data.get('urls') as string;
-		const urls = urlsString
-			.split(',')
-			.map((url) => url.trim())
-			.filter(Boolean);
-		const generationMethod = data.get('generationMethod') as string;
-
-		if (urls?.length === 0)
-			fail(400, { message: "Missing data, make sure there's at least one URL", success: false });
-
-		let allContentPromisesResolved = [];
-		try {
-			allContentPromisesResolved = await Promise.all(
-				urls.map((url) => generateContentClientSide({ url, generationMethod, event }))
-			);
-		} catch (error) {
-			console.error(error);
-			throw svelteError(500, 'Server error while generating content. Try again later.');
-		}
-
-		let allContentfulEntryPromisesResolved = [];
-		try {
-			allContentfulEntryPromisesResolved = await Promise.all(
-				allContentPromisesResolved.map((contentResponse) => {
-					const contentfulObject = serializeEntry(contentResponse.data);
-					return createEntry('tool', contentfulObject);
-				})
-			);
-		} catch (error) {
-			console.error(error);
-			throw svelteError(500, 'Server error while uploading content. Try again later.');
-		}
-
-		return {
-			status: 201,
-			success: true,
-			body: {
-				data: allContentfulEntryPromisesResolved.map((entry) => entry.toPlainObject()),
-			},
-		};
+		// const { session } = await getSupabase(event);
+		// if (!session) throw svelteError(403, 'Not authorized');
+		// const { request } = event;
+		// const data = await request.formData();
+		// const urlsString = data.get('urls') as string;
+		// const urls = urlsString
+		// 	.split(',')
+		// 	.map((url) => url.trim())
+		// 	.filter(Boolean);
+		// const generationMethod = data.get('generationMethod') as string;
+		// if (urls?.length === 0)
+		// 	fail(400, { message: "Missing data, make sure there's at least one URL", success: false });
+		// let allContentPromisesResolved = [];
+		// try {
+		// 	allContentPromisesResolved = await Promise.all(
+		// 		urls.map((url) => generateContentClientSide({ url, generationMethod, event }))
+		// 	);
+		// } catch (error) {
+		// 	console.error(error);
+		// 	throw svelteError(500, 'Server error while generating content. Try again later.');
+		// }
+		// let allContentfulEntryPromisesResolved = [];
+		// try {
+		// 	allContentfulEntryPromisesResolved = await Promise.all(
+		// 		allContentPromisesResolved.map((contentResponse) => {
+		// 			const contentfulObject = serializeEntry(contentResponse.data);
+		// 			return createEntry('tool', contentfulObject);
+		// 		})
+		// 	);
+		// } catch (error) {
+		// 	console.error(error);
+		// 	throw svelteError(500, 'Server error while uploading content. Try again later.');
+		// }
+		// return {
+		// 	status: 201,
+		// 	success: true,
+		// 	body: {
+		// 		data: allContentfulEntryPromisesResolved.map((entry) => entry.toPlainObject()),
+		// 	},
+		// };
 	},
 
 	insert: async (event) => {

@@ -1,24 +1,34 @@
-import type { RequestEvent } from '../routes/admin/$types';
 import { DANGEROUSLY_PUBLIC_openai } from '../utils/public-openai';
 import { parse } from 'node-html-parser';
 import { toSlug } from '../utils/to-slug';
 
+export interface GenerateContentResponse {
+	data: {
+		name: string;
+		tags: string[];
+		url: string;
+		slug: string;
+		description: string;
+		imageId: string;
+		imageUrl: string;
+	};
+	isLoading: boolean;
+	error: null;
+}
+
 export const generateContentClientSide = async ({
 	url,
 	generationMethod,
-	event,
 }: {
 	url: string;
 	generationMethod: string;
-	event: RequestEvent;
-}) => {
+}): Promise<GenerateContentResponse> => {
 	let isLoading = true;
 	const error = null;
 
 	const params = new URLSearchParams();
 	params.set('url', url);
 	params.set('useCache', String(generationMethod === 'cached-content'));
-	const { fetch } = event;
 	const site =
 		generationMethod !== 'url'
 			? await (await fetch(`/api/readability?${params.toString()}`)).json()
@@ -82,7 +92,7 @@ export const generateContentClientSide = async ({
 		description = descriptionMeta?.getAttribute('content') ?? '';
 	}
 
-	const { imageId, imageUrl } = await generateImage({ url, name, event });
+	const { imageId, imageUrl } = await generateImage({ url, name });
 	isLoading = false;
 
 	return {
@@ -100,20 +110,11 @@ export const generateContentClientSide = async ({
 	};
 };
 
-export const generateImage = async ({
-	url,
-	name,
-	event,
-}: {
-	url: string;
-	name: string;
-	event: RequestEvent;
-}) => {
+export const generateImage = async ({ url, name }: { url: string; name: string }) => {
 	let isLoading = true;
 	const params = new URLSearchParams();
 	params.set('url', url);
 	params.set('name', name);
-	const { fetch } = event;
 	const response = await fetch(`/api/take-screenshot?${params.toString()}`);
 	const completion = await response.json();
 

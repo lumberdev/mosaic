@@ -6,7 +6,7 @@
 	let generationMethod = 'cached-content';
 	let urls = '';
 	let isLoading = false;
-	let allContentPromisesResolved: GenerateContentResponse[] = [];
+	let allContentPromisesResolved: PromiseSettledResult<GenerateContentResponse>[] = [];
 	let allContentfulEntries: Entry[] = [];
 	let isContentfulEntriesLoading = false;
 
@@ -16,7 +16,7 @@
 			.map((url) => url.trim())
 			.filter(Boolean);
 		try {
-			allContentPromisesResolved = await Promise.all(
+			allContentPromisesResolved = await Promise.allSettled(
 				urlsArray.map((url) => generateContentClientSide({ url, generationMethod }))
 			);
 		} catch (error) {
@@ -27,11 +27,27 @@
 
 	$: {
 		if (allContentPromisesResolved.length > 0) {
-			uploadToContentful().then((data) => (allContentfulEntries = data));
+			const allContentPromisesFulfilled = allContentPromisesResolved.filter(
+				(result) => result.status === 'fulfilled'
+			) as PromiseFulfilledResult<GenerateContentResponse>[];
+			const allContentPromisesFulfilledValues = allContentPromisesFulfilled.map(
+				(result) => result.value
+			);
+			uploadToContentful(allContentPromisesFulfilledValues).then(
+				(data) =>
+					(allContentfulEntries = data
+						.filter((entry: PromiseSettledResult<Entry>) => entry.status === 'fulfilled')
+						.map((entry: PromiseFulfilledResult<Entry>) => entry.value))
+			);
 		}
 	}
 
-	async function uploadToContentful() {
+	$: {
+		console.log('content promises', allContentPromisesResolved);
+		console.log('contentful entries', allContentfulEntries);
+	}
+
+	async function uploadToContentful(contentArray: GenerateContentResponse[]) {
 		isContentfulEntriesLoading = true;
 		let data = [];
 		try {
@@ -40,7 +56,7 @@
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(allContentPromisesResolved),
+				body: JSON.stringify(contentArray),
 			});
 			data = await response.json();
 		} catch (error) {

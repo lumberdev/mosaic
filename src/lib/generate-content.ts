@@ -13,7 +13,6 @@ export interface GenerateContentResponse {
 		imageUrl: string;
 	};
 	isLoading: boolean;
-	error: null;
 }
 
 export const generateContentClientSide = async ({
@@ -24,7 +23,6 @@ export const generateContentClientSide = async ({
 	generationMethod: string;
 }): Promise<GenerateContentResponse> => {
 	let isLoading = true;
-	const error = null;
 
 	const params = new URLSearchParams();
 	params.set('url', url);
@@ -106,7 +104,6 @@ export const generateContentClientSide = async ({
 			imageUrl,
 		},
 		isLoading,
-		error,
 	};
 };
 

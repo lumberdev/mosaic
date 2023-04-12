@@ -7,9 +7,9 @@ import type { GenerateContentResponse } from '$lib/generate-content';
 export const POST: RequestHandler = async ({ request }) => {
 	const allContentPromisesResolved = await request.json();
 
-	let allContentfulEntryPromisesResolved: Entry[];
+	let allContentfulEntryPromisesResolved: PromiseSettledResult<Entry>[];
 	try {
-		allContentfulEntryPromisesResolved = await Promise.all(
+		allContentfulEntryPromisesResolved = await Promise.allSettled(
 			allContentPromisesResolved.map((contentResponse: GenerateContentResponse) => {
 				const contentfulObject = serializeEntry(contentResponse.data);
 				return createEntry('tool', contentfulObject);

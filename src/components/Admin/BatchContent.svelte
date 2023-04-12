@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { generateContentClientSide, type GenerateContentResponse } from '$lib/generate-content';
 	import { error as svelteError } from '@sveltejs/kit';
 	import type { Entry } from 'contentful-management';
@@ -11,7 +10,7 @@
 	let allContentfulEntries: Entry[] = [];
 	let isContentfulEntriesLoading = false;
 
-	const handleSubmit = async () => {
+	async function handleSubmit() {
 		const urlsArray = urls
 			.split(',')
 			.map((url) => url.trim())
@@ -24,7 +23,7 @@
 			console.error(error);
 			throw svelteError(500, 'Server error while generating content. Try again later.');
 		}
-	};
+	}
 
 	$: {
 		if (allContentPromisesResolved.length > 0) {

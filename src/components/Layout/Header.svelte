@@ -28,6 +28,11 @@
 			<Button as="a" href="/" className="md:block hidden" {buttonLabel} />
 		</div>
 	{:else}
-		<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
+		<div class="flex gap-8">
+			{#if $page.data.session}
+				<Button as="a" href="/admin" buttonLabel="Admin" />
+			{/if}
+			<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
+		</div>
 	{/if}
 </header>

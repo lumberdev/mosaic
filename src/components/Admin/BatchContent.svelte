@@ -1,14 +1,14 @@
 <script lang="ts">
 	import {
-		generateContentClientSide,
+		generateAIContentClientSide,
 		getReadability,
-		type GenerateContentResponse,
 		getMetaDescription,
 	} from '$lib/generate-content';
 	import { error as svelteError } from '@sveltejs/kit';
 	import type { Entry } from 'contentful-management';
 	import type {
 		AllSiteReadabilityAndMetaDescription,
+		GenerateContentResponse,
 		MetaDescriptionResponse,
 		ReadabilityResponse,
 	} from '../../types';
@@ -22,8 +22,7 @@
 	let allContentfulEntries: Entry[] = [];
 	let isContentfulEntriesLoading = false;
 
-	async function getSiteContent() {
-		// Grab URLs, split, trim, and filter out empty strings
+	async function handleSiteContentClick() {
 		const urlsArray = urls
 			.split(',')
 			.map((url) => url.trim())
@@ -31,8 +30,8 @@
 
 		isSiteContentLoading = true;
 
-		// For each URL, get site content from readability as well as their meta description
 		try {
+			// Get all the content from the URLs, both from Readability and Meta Description
 			const allResponses: PromiseSettledResult<
 				PromiseSettledResult<ReadabilityResponse | MetaDescriptionResponse>[]
 			>[] = await Promise.allSettled(
@@ -44,6 +43,7 @@
 						])
 				)
 			);
+			// filter the responses to only get the ones that were fulfilled
 			const allFulfilledPromises = allResponses.filter(
 				(result) =>
 					result.status === 'fulfilled' &&
@@ -51,7 +51,7 @@
 			) as PromiseFulfilledResult<
 				PromiseFulfilledResult<ReadabilityResponse | MetaDescriptionResponse>[]
 			>[];
-			console.log('fulfilledPromises', allFulfilledPromises);
+			// reorganize nested array of responses into a single array of objects
 			allSiteReadbilityAndMetaDescriptions = allFulfilledPromises.map((result) =>
 				result.value.reduce(
 					(
@@ -82,23 +82,15 @@
 		isSiteContentLoading = false;
 	}
 
-	// Show those to the user and let them pick which one they want to send to OpenAI
-
-	// Generate content with OpenAI
-
 	$: {
-		console.log('contentful entries', allContentfulEntries);
-	}
-
-	$: {
-		if (!allAiContent) {
+		// assign a value to allAiContent once allSiteReadbilityAndMetaDescriptions is populated
+		if (!allAiContent && allSiteReadbilityAndMetaDescriptions.length > 0) {
 			allAiContent = Array(allSiteReadbilityAndMetaDescriptions.length).fill(null);
 		}
 	}
 
 	$: {
 		// Upload to Contentful once all the content is generated
-		console.log('allAiContent', allAiContent);
 		if (allAiContent && allAiContent.filter(Boolean).length === allAiContent.length) {
 			uploadToContentful(allAiContent);
 		}
@@ -123,6 +115,23 @@
 		}
 		isContentfulEntriesLoading = false;
 		return data;
+	}
+
+	async function handleGenerateContentClick({
+		url,
+		siteContent,
+		index,
+	}: {
+		url: string;
+		siteContent: string;
+		index: number;
+	}): Promise<void> {
+		if (allAiContent) {
+			allAiContent[index] = await generateAIContentClientSide({
+				url,
+				siteContent,
+			});
+		}
 	}
 </script>
 
@@ -168,7 +177,7 @@
 
 	<div class="mb-12 w-full">
 		<button
-			on:click={getSiteContent}
+			on:click={handleSiteContentClick}
 			type="button"
 			class="c-btn-submit w-full disabled:cursor-not-allowed disabled:opacity-20"
 			disabled={isLoading}>
@@ -178,44 +187,36 @@
 </form>
 
 {#if !isSiteContentLoading && allSiteReadbilityAndMetaDescriptions.length > 0}
-	<div class="mx-auto flex flex-col items-center justify-center pt-8">
+	<div class="mx-auto flex flex-col items-center justify-center gap-8 pt-8">
 		<h1 class="mb-4 font-display text-5xl">Site Content</h1>
 		<p class="mb-8">Here is the content that was generated for each site</p>
 		{#each allSiteReadbilityAndMetaDescriptions as { readability, metaDescription }, i}
+			{@const greyedOutStyles = allAiContent && allAiContent[i] ? 'opacity-20' : ''}
 			<div class="grid grid-cols-2 gap-2">
-				<div class="rounded border-3 border-black bg-white px-5 py-4">
+				<h2 class="col-span-2 justify-self-center font-display">{readability.url}</h2>
+				<div class={`rounded border-3 border-black bg-white px-5 py-4 ${greyedOutStyles}`}>
 					<h2 class="mb-4 text-lg font-bold">Readability</h2>
 					<button
 						class="c-btn-submit my-6 w-full disabled:cursor-not-allowed disabled:opacity-20"
-						on:click={async () => {
-							if (allAiContent) {
-								allAiContent[i] = await generateContentClientSide({
-									url: readability.url,
-									siteContent: readability.textContent,
-								});
-								allSiteReadbilityAndMetaDescriptions = allSiteReadbilityAndMetaDescriptions.filter(
-									(_, index) => index !== i
-								);
-							}
-						}}>Generate AI Content with Readability</button>
+						on:click={() =>
+							handleGenerateContentClick({
+								url: readability.url,
+								siteContent: readability.textContent,
+								index: i,
+							})}>Generate AI Content with Readability</button>
 					<p>{readability.textContent}</p>
 				</div>
 
-				<div class="rounded border-3 border-black bg-white px-5 py-4">
+				<div class={`rounded border-3 border-black bg-white px-5 py-4 ${greyedOutStyles}`}>
 					<h2 class="mb-4 text-lg font-bold">Meta Description</h2>
 					<button
 						class="c-btn-submit my-6 w-full disabled:cursor-not-allowed disabled:opacity-20"
-						on:click={async () => {
-							if (allAiContent) {
-								allAiContent[i] = await generateContentClientSide({
-									url: metaDescription.url,
-									siteContent: metaDescription.description,
-								});
-								allSiteReadbilityAndMetaDescriptions = allSiteReadbilityAndMetaDescriptions.filter(
-									(_, index) => index !== i
-								);
-							}
-						}}>Generate AI Content with Meta Description</button>
+						on:click={() =>
+							handleGenerateContentClick({
+								url: metaDescription.url,
+								siteContent: metaDescription.description,
+								index: i,
+							})}>Generate AI Content with Meta Description</button>
 					<p>{metaDescription.description}</p>
 				</div>
 			</div>

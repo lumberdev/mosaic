@@ -25,7 +25,7 @@ export const generateAIContentClientSide = async ({
       "tags": "<[]>"
       }
 		
-			Make a summary of the pupose of the tool described by the following text and give it 3 to 5 tags:
+			Make a summary between 150 and 200 words of the pupose of the tool described by the following text and give it 3 to 5 tags:
 			${siteContent}
 
 			
@@ -110,7 +110,7 @@ export const getReadability = async ({
 		const response = await fetch(`/api/readability?${params.toString()}`);
 		site = (await response.json()) ?? {};
 	} catch (error) {
-		console.error(error);
+		console.error('error while fetching readbility', error);
 	}
 	return { ...site, url };
 };
@@ -128,7 +128,7 @@ export const getMetaDescription = async ({
 		const response = await fetch(`/api/meta-description?${params.toString()}`);
 		description = (await response.json()) ?? {};
 	} catch (error) {
-		console.error(error);
+		console.error('error while fetching meta description', error);
 	}
 	return { ...description, url };
 };

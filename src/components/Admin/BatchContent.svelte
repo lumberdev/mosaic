@@ -1,17 +1,14 @@
 <script lang="ts">
 	import { error as svelteError } from '@sveltejs/kit';
 	import type { Entry } from 'contentful-management';
-	import {
-		generateAIContentClientSide,
-		getReadability,
-		getMetaDescription,
-	} from '$lib/utils/generate-content';
+	import { getReadability, getMetaDescription } from '$lib/utils/generate-content';
 	import type {
 		AllSiteReadabilityAndMetaDescription,
 		GenerateContentResponse,
 		MetaDescriptionResponse,
 		ReadabilityResponse,
 	} from '$lib/types';
+	import BatchResults from './BatchResults.svelte';
 
 	let generationMethod = 'cached-content';
 	let urls = '';
@@ -22,7 +19,7 @@
 	let allContentfulEntries: Entry[] = [];
 	let isContentfulEntriesLoading = false;
 
-	async function handleSiteContentClick() {
+	async function handleSiteContentClick(): Promise<void> {
 		const urlsArray = urls
 			.split(',')
 			.map((url) => url?.trim())
@@ -92,6 +89,7 @@
 	$: {
 		console.log('allReadability', allSiteReadbilityAndMetaDescriptions);
 		console.log('allContentfulEntries', allContentfulEntries);
+		console.log('allAiContent', allAiContent);
 	}
 
 	$: {
@@ -121,26 +119,6 @@
 			throw svelteError(500, 'Server error while uploading to Contentful. Try again later.');
 		}
 		isContentfulEntriesLoading = false;
-	}
-
-	async function handleGenerateContentClick({
-		url,
-		siteContent,
-		siteTitle,
-		index,
-	}: {
-		url: string;
-		siteContent: string;
-		siteTitle: string;
-		index: number;
-	}): Promise<void> {
-		if (allAiContent) {
-			allAiContent[index] = await generateAIContentClientSide({
-				url,
-				siteContent,
-				siteTitle,
-			});
-		}
 	}
 </script>
 
@@ -200,39 +178,12 @@
 		<h1 class="mb-4 font-display text-5xl">Site Content</h1>
 		<p class="mb-8">Here is the content that was generated for each site</p>
 		{#each allSiteReadbilityAndMetaDescriptions as { readability, metaDescription }, i}
-			{@const greyedOutStyles = allAiContent && allAiContent[i] ? 'opacity-20' : ''}
-			<div class="grid grid-cols-2 gap-2">
-				<h2 class="col-span-2 justify-self-center font-display">
-					{readability.url}
-				</h2>
-				<div class={`rounded border-3 border-black bg-white px-5 py-4 ${greyedOutStyles}`}>
-					<h2 class="mb-4 text-lg font-bold">Readability</h2>
-					<button
-						class="c-btn-submit my-6 w-full disabled:cursor-not-allowed disabled:opacity-20"
-						on:click={() =>
-							handleGenerateContentClick({
-								url: readability.url,
-								siteContent: readability.textContent,
-								siteTitle: readability.title,
-								index: i,
-							})}>Generate AI Content with Readability</button>
-					<p>{readability.textContent}</p>
-				</div>
-
-				<div class={`rounded border-3 border-black bg-white px-5 py-4 ${greyedOutStyles}`}>
-					<h2 class="mb-4 text-lg font-bold">Meta Description</h2>
-					<button
-						class="c-btn-submit my-6 w-full disabled:cursor-not-allowed disabled:opacity-20"
-						on:click={() =>
-							handleGenerateContentClick({
-								url: metaDescription.url,
-								siteContent: metaDescription.description,
-								siteTitle: metaDescription.title,
-								index: i,
-							})}>Generate AI Content with Meta Description</button>
-					<p>{metaDescription.description}</p>
-				</div>
-			</div>
+			<BatchResults
+				bind:allAiContent
+				bind:allSiteReadbilityAndMetaDescriptions
+				{i}
+				{readability}
+				{metaDescription} />
 		{/each}
 	</div>
 {/if}

@@ -49,3 +49,11 @@ export interface ContentfulEntryArgs {
 	imageId: string;
 	imageUrl: string;
 }
+
+export type HandleGenerateContentClick = (params: {
+	url: string;
+	siteContent: string;
+	siteTitle: string;
+	index: number;
+	isReadability: boolean;
+}) => Promise<void>;

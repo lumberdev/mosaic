@@ -6,7 +6,7 @@
 	import Logo from '../SVG/Logo.svelte';
 
 	const { url } = $page;
-	$: buttonLabel = isAdmin ? 'Back to Home' : 'Submit an AI';
+	$: buttonLabel = isAdmin ? 'Home' : 'Submit an AI';
 	let isAdmin = /admin/i.test(url.pathname);
 	afterNavigate(({ to }) => {
 		isAdmin = /admin/i.test(to?.url.pathname ?? '');

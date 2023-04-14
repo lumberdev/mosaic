@@ -5,6 +5,7 @@ import type {
 	MetaDescriptionResponse,
 	ReadabilityResponse,
 } from '../types';
+import type { Asset } from 'contentful-management';
 
 export const generateAIContentClientSide = async ({
 	url,
@@ -28,15 +29,18 @@ export const generateAIContentClientSide = async ({
 			{
 			
 			`;
-
-	const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
-		model: 'text-davinci-003',
-		prompt,
-		max_tokens: 500,
-		temperature: 0.7,
-	});
-	console.log('openAiResponse', openAiResponse);
-	const [completion] = openAiResponse.data.choices ?? [];
+	let openAiResponse = null;
+	try {
+		openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
+			model: 'text-davinci-003',
+			prompt,
+			max_tokens: 500,
+			temperature: 0.7,
+		});
+	} catch (error) {
+		console.error(error);
+	}
+	const [completion] = openAiResponse?.data?.choices ?? [];
 	const data = completion?.text
 		? JSON.parse(
 				String('{' + completion.text)
@@ -48,10 +52,9 @@ export const generateAIContentClientSide = async ({
 	const name = data?.name || '';
 	const tags = data?.tags?.join(', ') || '';
 	const description = data?.summary || '';
-
 	const { imageId, imageUrl } = await generateImage({ url, name });
-	isLoading = false;
 
+	isLoading = false;
 	return {
 		data: {
 			name,
@@ -71,11 +74,16 @@ export const generateImage = async ({ url, name }: { url: string; name: string }
 	const params = new URLSearchParams();
 	params.set('url', url);
 	params.set('name', name);
-	const response = await fetch(`/api/take-screenshot?${params.toString()}`);
-	const completion = await response.json();
+	let imageFromContentful = {} as { asset: Asset };
+	try {
+		const response = await fetch(`/api/take-screenshot?${params.toString()}`);
+		imageFromContentful = await response.json();
+	} catch (err) {
+		console.error(err);
+	}
 
-	const imageId = completion?.asset.sys.id ?? '';
-	const imageUrl = completion?.asset.fields.file['en-US'].url ?? '';
+	const imageId = imageFromContentful?.asset?.sys?.id ?? '';
+	const imageUrl = imageFromContentful?.asset?.fields?.file['en-US'].url ?? '';
 	isLoading = false;
 	return {
 		imageId,
@@ -94,8 +102,14 @@ export const getReadability = async ({
 	const params = new URLSearchParams();
 	params.set('url', url);
 	params.set('useCache', String(generationMethod === 'cached-content'));
-	const response = await fetch(`/api/readability?${params.toString()}`);
-	const site = await response.json();
+
+	let site = {} as ReadabilityResponse;
+	try {
+		const response = await fetch(`/api/readability?${params.toString()}`);
+		site = (await response.json()) ?? {};
+	} catch (error) {
+		console.error(error);
+	}
 	return { ...site, url };
 };
 
@@ -106,7 +120,13 @@ export const getMetaDescription = async ({
 }): Promise<MetaDescriptionResponse> => {
 	const params = new URLSearchParams();
 	params.set('url', url);
-	const response = await fetch(`/api/meta-description?${params.toString()}`);
-	const description = await response.json();
+
+	let description = {} as MetaDescriptionResponse;
+	try {
+		const response = await fetch(`/api/meta-description?${params.toString()}`);
+		description = (await response.json()) ?? {};
+	} catch (error) {
+		console.error(error);
+	}
 	return { ...description, url };
 };

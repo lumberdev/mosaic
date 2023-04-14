@@ -1,21 +1,12 @@
 import { DANGEROUSLY_PUBLIC_openai } from '../utils/public-openai';
 import { toSlug } from '../utils/to-slug';
-import type { MetaDescriptionResponse, ReadabilityResponse } from '../types';
+import type {
+	GenerateContentResponse,
+	MetaDescriptionResponse,
+	ReadabilityResponse,
+} from '../types';
 
-export interface GenerateContentResponse {
-	data: {
-		name: string;
-		tags: string[];
-		url: string;
-		slug: string;
-		description: string;
-		imageId: string;
-		imageUrl: string;
-	};
-	isLoading: boolean;
-}
-
-export const generateContentClientSide = async ({
+export const generateAIContentClientSide = async ({
 	url,
 	siteContent,
 }: {

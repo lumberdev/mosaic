@@ -25,3 +25,26 @@ export interface AllSiteReadabilityAndMetaDescription {
 	readability: ReadabilityResponse;
 	metaDescription: MetaDescriptionResponse;
 }
+
+export interface GenerateContentResponse {
+	data: {
+		name: string;
+		tags: string[];
+		url: string;
+		slug: string;
+		description: string;
+		imageId: string;
+		imageUrl: string;
+	};
+	isLoading: boolean;
+}
+
+export interface ContentfulEntryArgs {
+	name: string;
+	tags: string[];
+	url: string;
+	slug: string;
+	description: string;
+	imageId: string;
+	imageUrl: string;
+}

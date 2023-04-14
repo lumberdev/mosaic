@@ -1,6 +1,6 @@
 import { DANGEROUSLY_PUBLIC_openai } from '../utils/public-openai';
-import { parse } from 'node-html-parser';
 import { toSlug } from '../utils/to-slug';
+import type { MetaDescriptionResponse, ReadabilityResponse } from '../types';
 
 export interface GenerateContentResponse {
 	data: {
@@ -17,52 +17,26 @@ export interface GenerateContentResponse {
 
 export const generateContentClientSide = async ({
 	url,
-	generationMethod,
+	siteContent,
 }: {
 	url: string;
-	generationMethod: string;
+	siteContent: string;
 }): Promise<GenerateContentResponse> => {
 	let isLoading = true;
 
-	const params = new URLSearchParams();
-	params.set('url', url);
-	params.set('useCache', String(generationMethod === 'cached-content'));
-	const site =
-		generationMethod !== 'url'
-			? await (await fetch(`/api/readability?${params.toString()}`)).json()
-			: null;
+	const prompt = `
+			${siteContent}
 
-	const prompt = !site
-		? `{${url}}
-
-      a summary of the purpose of the tool described by the website above as a JSON object that looks like this
+			a summary of the purpose of the tool described by the website above as a JSON object that looks like this
       "{
       "name": "Name of tool",
       "summary": "string",
       "tags": "[Array of 5 tags describing the purpose of the tool]"
       }":
-
-      {`
-		: generationMethod === 'meta'
-		? `{${site?.textContent}}
-
-      summary of the tool described by the text above as a JSON object that looks like this
-      "{
-      "name": "Name of tool",
-      "tags": "[Array of 5 tags describing the purpose of the tool]"
-      }":
-
-      {`
-		: `{${site?.textContent}}
-
-      a summary of the purpose of the tool described by the text above as a JSON object that looks like this
-      "{
-      "name": "Name of tool",
-      "summary": "string",
-      "tags": "[Array of 5 tags describing the purpose of the tool]"
-      }":
-
-      {`;
+			
+			{
+			
+			`;
 
 	const openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
 		model: 'text-davinci-003',
@@ -70,6 +44,7 @@ export const generateContentClientSide = async ({
 		max_tokens: 500,
 		temperature: 0.7,
 	});
+	console.log('openAiResponse', openAiResponse);
 	const [completion] = openAiResponse.data.choices ?? [];
 	const data = completion?.text
 		? JSON.parse(
@@ -81,14 +56,7 @@ export const generateContentClientSide = async ({
 
 	const name = data?.name || '';
 	const tags = data?.tags?.join(', ') || '';
-	let description = '';
-	if (generationMethod !== 'meta') {
-		description = data?.summary || '';
-	} else {
-		const root = parse(site.html);
-		const descriptionMeta = root.querySelector('head meta[name="description"]');
-		description = descriptionMeta?.getAttribute('content') ?? '';
-	}
+	const description = data?.summary || '';
 
 	const { imageId, imageUrl } = await generateImage({ url, name });
 	isLoading = false;
@@ -123,4 +91,31 @@ export const generateImage = async ({ url, name }: { url: string; name: string }
 		imageUrl,
 		isLoading,
 	};
+};
+
+export const getReadability = async ({
+	url,
+	generationMethod,
+}: {
+	url: string;
+	generationMethod: string;
+}): Promise<ReadabilityResponse> => {
+	const params = new URLSearchParams();
+	params.set('url', url);
+	params.set('useCache', String(generationMethod === 'cached-content'));
+	const response = await fetch(`/api/readability?${params.toString()}`);
+	const site = await response.json();
+	return { ...site, url };
+};
+
+export const getMetaDescription = async ({
+	url,
+}: {
+	url: string;
+}): Promise<MetaDescriptionResponse> => {
+	const params = new URLSearchParams();
+	params.set('url', url);
+	const response = await fetch(`/api/meta-description?${params.toString()}`);
+	const description = await response.json();
+	return { ...description, url };
 };

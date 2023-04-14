@@ -19,6 +19,7 @@ export interface ReadabilityResponse {
 export interface MetaDescriptionResponse {
 	description: string;
 	url: string;
+	title: string;
 }
 
 export interface AllSiteReadabilityAndMetaDescription {

@@ -11,6 +11,6 @@ export const GET: RequestHandler = async (req) => {
 	const root = parse(site);
 	const descriptionMeta = root.querySelector('head meta[name="description"]');
 	const description = descriptionMeta?.getAttribute('content') ?? '';
-
-	return json({ description });
+	const title = root.querySelector('head title')?.text ?? '';
+	return json({ description, title });
 };

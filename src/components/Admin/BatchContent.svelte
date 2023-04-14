@@ -1,17 +1,17 @@
 <script lang="ts">
+	import { error as svelteError } from '@sveltejs/kit';
+	import type { Entry } from 'contentful-management';
 	import {
 		generateAIContentClientSide,
 		getReadability,
 		getMetaDescription,
-	} from '$lib/generate-content';
-	import { error as svelteError } from '@sveltejs/kit';
-	import type { Entry } from 'contentful-management';
+	} from '$lib/utils/generate-content';
 	import type {
 		AllSiteReadabilityAndMetaDescription,
 		GenerateContentResponse,
 		MetaDescriptionResponse,
 		ReadabilityResponse,
-	} from '../../types';
+	} from '$lib/types';
 
 	let generationMethod = 'cached-content';
 	let urls = '';
@@ -90,6 +90,11 @@
 	}
 
 	$: {
+		console.log('allReadability', allSiteReadbilityAndMetaDescriptions);
+		console.log('allContentfulEntries', allContentfulEntries);
+	}
+
+	$: {
 		// Upload to Contentful once all the content is generated
 		if (allAiContent && allAiContent.filter(Boolean).length === allAiContent.length) {
 			uploadToContentful(allAiContent);
@@ -98,7 +103,6 @@
 
 	async function uploadToContentful(contentArray: GenerateContentResponse[]) {
 		isContentfulEntriesLoading = true;
-		let data = [];
 		try {
 			const response = await fetch('/api/upload-to-contentful', {
 				method: 'POST',
@@ -107,29 +111,34 @@
 				},
 				body: JSON.stringify(contentArray),
 			});
-			data = await response.json();
-			if (response.ok) urls = '';
+			allContentfulEntries = await response.json();
+			if (response.ok) {
+				urls = '';
+				allSiteReadbilityAndMetaDescriptions = [];
+			}
 		} catch (error) {
 			console.error(error);
 			throw svelteError(500, 'Server error while uploading to Contentful. Try again later.');
 		}
 		isContentfulEntriesLoading = false;
-		return data;
 	}
 
 	async function handleGenerateContentClick({
 		url,
 		siteContent,
+		siteTitle,
 		index,
 	}: {
 		url: string;
 		siteContent: string;
+		siteTitle: string;
 		index: number;
 	}): Promise<void> {
 		if (allAiContent) {
 			allAiContent[index] = await generateAIContentClientSide({
 				url,
 				siteContent,
+				siteTitle,
 			});
 		}
 	}
@@ -204,6 +213,7 @@
 							handleGenerateContentClick({
 								url: readability.url,
 								siteContent: readability.textContent,
+								siteTitle: readability.title,
 								index: i,
 							})}>Generate AI Content with Readability</button>
 					<p>{readability.textContent}</p>
@@ -217,6 +227,7 @@
 							handleGenerateContentClick({
 								url: metaDescription.url,
 								siteContent: metaDescription.description,
+								siteTitle: metaDescription.title,
 								index: i,
 							})}>Generate AI Content with Meta Description</button>
 					<p>{metaDescription.description}</p>

@@ -10,24 +10,26 @@ import type { Asset } from 'contentful-management';
 export const generateAIContentClientSide = async ({
 	url,
 	siteContent,
+	siteTitle,
 }: {
 	url: string;
 	siteContent: string;
+	siteTitle: string;
 }): Promise<GenerateContentResponse> => {
 	let isLoading = true;
 
 	const prompt = `
+			Answer with the following JSON format: 
+			{
+      "summary": "<string>",
+      "tags": "<[]>"
+      }
+		
+			Make a summary of the pupose of the tool described by the following text and give it 3 to 5 tags:
 			${siteContent}
 
-			a summary of the purpose of the tool described by the website above as a JSON object that looks like this
-      "{
-      "name": "Name of tool",
-      "summary": "string",
-      "tags": "[Array of 5 tags describing the purpose of the tool]"
-      }":
 			
-			{
-			
+			{ "summary":
 			`;
 	let openAiResponse = null;
 	try {
@@ -43,13 +45,13 @@ export const generateAIContentClientSide = async ({
 	const [completion] = openAiResponse?.data?.choices ?? [];
 	const data = completion?.text
 		? JSON.parse(
-				String('{' + completion.text)
+				String('{ "summary":' + completion.text)
 					.trim()
 					.replace(/\n/g, '')
 		  )
 		: null;
 
-	const name = data?.name || '';
+	const name = siteTitle;
 	const tags = data?.tags?.join(', ') || '';
 	const description = data?.summary || '';
 	const { imageId, imageUrl } = await generateImage({ url, name });

@@ -1,4 +1,4 @@
-import { sanitizeString } from '../../../utils/sanitize-string';
+import { sanitizeString } from '$lib/utils/sanitize-string';
 import type { RequestHandler } from './$types';
 import { json, error as svelteError } from '@sveltejs/kit';
 import { NODE_ENV } from '$env/static/private';

@@ -1,5 +1,5 @@
-import { DANGEROUSLY_PUBLIC_openai } from '../utils/public-openai';
-import { toSlug } from '../utils/to-slug';
+import { DANGEROUSLY_PUBLIC_openai } from './public-openai';
+import { toSlug } from './to-slug';
 import type {
 	GenerateContentResponse,
 	MetaDescriptionResponse,
@@ -100,7 +100,6 @@ export const getReadability = async ({
 	generationMethod: string;
 }): Promise<ReadabilityResponse> => {
 	const params = new URLSearchParams();
-	console.log('getReadability', { url, generationMethod });
 	params.set('url', url);
 	params.set('useCache', String(generationMethod === 'cached-content'));
 
@@ -119,7 +118,6 @@ export const getMetaDescription = async ({
 }: {
 	url: string;
 }): Promise<MetaDescriptionResponse> => {
-	console.log('getMetaDescription', { url });
 	const params = new URLSearchParams();
 	params.set('url', url);
 

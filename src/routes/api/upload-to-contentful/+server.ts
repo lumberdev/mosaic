@@ -2,7 +2,7 @@ import { createEntry, serializeEntry } from '$lib/contentful';
 import type { Entry } from 'contentful-management';
 import type { RequestHandler } from './$types';
 import { json, error as svelteError } from '@sveltejs/kit';
-import type { GenerateContentResponse } from '$lib/generate-content';
+import type { GenerateContentResponse } from '$lib/types';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const allContentPromisesResolved = await request.json();

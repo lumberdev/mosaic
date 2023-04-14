@@ -4,7 +4,7 @@ import {
 	CONTENTFUL_MANAGEMENT_TOKEN,
 } from '$env/static/private';
 import mgmt from 'contentful-management';
-import type { ContentfulEntryArgs } from '../types';
+import type { ContentfulEntryArgs } from './types';
 
 export async function contentfulFetch(query: string) {
 	const url = `https://graphql.contentful.com/content/v1/spaces/${CONTENTFUL_SPACE_ID}`;

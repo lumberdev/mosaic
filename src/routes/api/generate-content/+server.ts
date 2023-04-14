@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
-import { openai } from '../../../utils/openai';
-import readability from '../../../utils/readability';
+import { openai } from '$lib/utils/openai';
+import readability from '$lib/utils/readability';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (req) => {

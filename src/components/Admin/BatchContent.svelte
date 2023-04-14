@@ -25,7 +25,7 @@
 	async function handleSiteContentClick() {
 		const urlsArray = urls
 			.split(',')
-			.map((url) => url.trim())
+			.map((url) => url?.trim())
 			.filter(Boolean);
 
 		isSiteContentLoading = true;
@@ -193,7 +193,9 @@
 		{#each allSiteReadbilityAndMetaDescriptions as { readability, metaDescription }, i}
 			{@const greyedOutStyles = allAiContent && allAiContent[i] ? 'opacity-20' : ''}
 			<div class="grid grid-cols-2 gap-2">
-				<h2 class="col-span-2 justify-self-center font-display">{readability.url}</h2>
+				<h2 class="col-span-2 justify-self-center font-display">
+					{readability.url}
+				</h2>
 				<div class={`rounded border-3 border-black bg-white px-5 py-4 ${greyedOutStyles}`}>
 					<h2 class="mb-4 text-lg font-bold">Readability</h2>
 					<button

@@ -7,7 +7,6 @@
 	});
 </script>
 
-<a
-	href={previousPage}
-	class={`px-5 py-4 font-display ${!previousPage ? 'text-gray-500' : ''}`}
-	aria-disabled={!previousPage}>← Back</a>
+{#if previousPage}
+	<a href={previousPage} class={`px-5 py-4 font-display`}>← Back</a>
+{/if}

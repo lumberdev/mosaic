@@ -27,6 +27,9 @@
 
 		isSiteContentLoading = true;
 
+		if (allContentfulEntries.length > 0) allContentfulEntries = [];
+		if (allSiteReadbilityAndMetaDescriptions.length > 0) allSiteReadbilityAndMetaDescriptions = [];
+
 		try {
 			// Get all the content from the URLs, both from Readability and Meta Description
 			const allResponses: PromiseSettledResult<
@@ -86,11 +89,9 @@
 		}
 	}
 
-	$: {
-		console.log('allReadability', allSiteReadbilityAndMetaDescriptions);
-		console.log('allContentfulEntries', allContentfulEntries);
-		console.log('allAiContent', allAiContent);
-	}
+	$: console.log('allReadability', allSiteReadbilityAndMetaDescriptions);
+	$: console.log('allContentfulEntries', allContentfulEntries);
+	$: console.log('allAiContent', allAiContent);
 
 	$: {
 		// Upload to Contentful once all the content is generated
@@ -177,7 +178,7 @@
 	<div class="mx-auto flex flex-col items-center justify-center gap-8 pt-8">
 		<h1 class="mb-4 font-display text-5xl">Site Content</h1>
 		<p class="mb-8">Here is the content that was generated for each site</p>
-		{#each allSiteReadbilityAndMetaDescriptions as { readability, metaDescription }, i}
+		{#each allSiteReadbilityAndMetaDescriptions as { readability, metaDescription }, i (readability.url)}
 			<BatchResults
 				bind:allAiContent
 				bind:allSiteReadbilityAndMetaDescriptions

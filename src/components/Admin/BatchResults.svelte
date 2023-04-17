@@ -22,16 +22,16 @@
 		url,
 		siteContent,
 		siteTitle,
-		index,
 		isReadability,
 	}) => {
 		isReadability ? (isReadabilityLoading = true) : (isMetaDescriptionLoading = true);
+		const aiContent = await generateAIContentClientSide({
+			url,
+			siteContent,
+			siteTitle,
+		});
 		if (allAiContent) {
-			allAiContent[index] = await generateAIContentClientSide({
-				url,
-				siteContent,
-				siteTitle,
-			});
+			allAiContent[i] = aiContent;
 		}
 		isReadability ? (isReadabilityLoading = true) : (isMetaDescriptionLoading = true);
 	};
@@ -40,6 +40,7 @@
 		allSiteReadbilityAndMetaDescriptions = allSiteReadbilityAndMetaDescriptions.filter(
 			(_, index) => index !== i
 		);
+		if (allAiContent) allAiContent = allAiContent?.filter((_, index) => index !== i);
 	};
 </script>
 
@@ -49,7 +50,8 @@
 			{readability.url}
 		</h2>
 		<button
-			class="rounded border-2 border-black bg-white px-2 py-1 font-display text-sm shadow-sm hover:shadow-md"
+			class="rounded border-2 border-black bg-white px-2 py-1 font-display text-sm shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-20"
+			disabled={isReadabilityLoading || isMetaDescriptionLoading}
 			on:click={handleDelete}>Delete</button>
 	</div>
 	<div
@@ -65,7 +67,6 @@
 					url: readability.url,
 					siteContent: readability.textContent,
 					siteTitle: readability.title,
-					index: i,
 					isReadability: true,
 				})}>Generate AI Content with Readability</button>
 		<p>{readability.textContent}</p>
@@ -84,7 +85,6 @@
 					url: metaDescription.url,
 					siteContent: metaDescription.description,
 					siteTitle: metaDescription.title,
-					index: i,
 					isReadability: false,
 				})}
 			>Generate AI Content with Meta Description

@@ -21,15 +21,17 @@ export const generateAIContentClientSide = async ({
 	const prompt = `
 			Answer with the following JSON format: 
 			{
+			"name": "<string>",	
       "summary": "<string>",
       "tags": "<[]>"
       }
 		
+			Get the name of the tool from this url: ${url}
 			Make a summary between 150 and 200 words of the pupose of the tool described by the following text and give it 3 to 5 tags:
 			${siteContent}
 
 			
-			{ "summary":
+			{ "name":
 			`;
 	let openAiResponse = null;
 
@@ -50,7 +52,7 @@ export const generateAIContentClientSide = async ({
 	if (completion?.text) {
 		try {
 			data = JSON.parse(
-				String('{ "summary":' + completion.text)
+				String('{ "name":' + completion.text)
 					.trim()
 					.replace(/\n/g, '')
 			);
@@ -59,7 +61,7 @@ export const generateAIContentClientSide = async ({
 		}
 	}
 
-	const name = siteTitle;
+	const name = data?.name || siteTitle;
 	const tags = data?.tags?.join(', ') || '';
 	const description = data?.summary || '';
 	const { imageId, imageUrl } = await generateImage({ url, name });

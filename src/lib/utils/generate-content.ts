@@ -32,6 +32,7 @@ export const generateAIContentClientSide = async ({
 			{ "summary":
 			`;
 	let openAiResponse = null;
+
 	try {
 		openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
 			model: 'text-davinci-003',
@@ -42,14 +43,21 @@ export const generateAIContentClientSide = async ({
 	} catch (error) {
 		console.error(error);
 	}
+
 	const [completion] = openAiResponse?.data?.choices ?? [];
-	const data = completion?.text
-		? JSON.parse(
+	let data = null;
+
+	if (completion?.text) {
+		try {
+			data = JSON.parse(
 				String('{ "summary":' + completion.text)
 					.trim()
 					.replace(/\n/g, '')
-		  )
-		: null;
+			);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
 	const name = siteTitle;
 	const tags = data?.tags?.join(', ') || '';

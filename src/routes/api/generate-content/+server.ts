@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
-import { openai } from '../../../utils/openai';
-import readability from '../../../utils/readability';
+import { openai } from '$lib/utils/openai';
+import readability from '$lib/utils/readability';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (req) => {
@@ -25,18 +25,17 @@ export const GET: RequestHandler = async (req) => {
 		const response = await openai.post('', {
 			model: 'text-davinci-003',
 			prompt,
-			max_tokens: 500
+			max_tokens: 500,
 		});
 
 		const [completion] = response.data.choices ?? [];
-		console.log({ completion: String(completion.text).trim().replace(/\n/g, '') });
 		const data = completion?.text
 			? JSON.parse(String(completion.text).trim().replace(/\n/g, ''))
 			: null;
 
 		return json(data);
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		return json({});
 	}
 };

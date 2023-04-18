@@ -1,4 +1,4 @@
-import { sanitizeString } from '../../../utils/sanitize-string';
+import { sanitizeString } from '$lib/utils/sanitize-string';
 import type { RequestHandler } from './$types';
 import { json, error as svelteError } from '@sveltejs/kit';
 import { NODE_ENV } from '$env/static/private';
@@ -48,7 +48,6 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 
 	if (asset) {
-		console.log('asset', asset.fields.file);
 		return json({ asset });
 	} else throw svelteError(500, { message: 'Upload failed' });
 };

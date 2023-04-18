@@ -1,12 +1,13 @@
-<script>
+<script lang="ts">
 	import '../app.css';
 	import '@fontsource/silkscreen';
 	import '@fontsource/spline-sans';
 	import { supabase } from '$lib/supabase';
-	import { invalidate } from '$app/navigation';
+	import { afterNavigate, invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Header from '../components/Layout/Header.svelte';
 	import Footer from '../components/Layout/Footer.svelte';
+	import BackLink from '../components/Layout/BackLink.svelte';
 
 	onMount(() => {
 		const {
@@ -27,6 +28,7 @@
 
 <main class="my-8 mx-4 min-h-screen md:mx-12">
 	<Header />
+	<BackLink />
 	<slot />
 	<Footer />
 </main>

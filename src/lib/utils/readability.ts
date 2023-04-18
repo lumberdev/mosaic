@@ -16,16 +16,9 @@ const getCachedHTML = (url: string) => {
 			return res.data;
 		})
 		.catch((error) => {
-			if (error.request.res.statusCode == 404) {
-				return axios({
-					method: 'get',
-					url: url,
-					headers: { 'User-Agent': userAgent },
-				}).then((res) => {
-					if (res.status == 200) {
-						return res.data;
-					}
-				});
+			console.error('error while fetching cahed html', error?.response);
+			if (error.request.res.statusCode >= 400 && error.request.res.statusCode < 500) {
+				return getHTML(url);
 			}
 		});
 };
@@ -35,22 +28,24 @@ const getHTML = (url: string) => {
 		method: 'get',
 		url: url,
 		headers: { 'User-Agent': userAgent },
-	}).then((res) => {
-		if (res.status == 200) {
-			return res.data;
-		}
-	});
+	})
+		.then((res) => {
+			if (res.status == 200) {
+				return res.data;
+			}
+		})
+		.catch((error) => {
+			console.error('error while fetching html', error?.response);
+		});
 };
 
 export default async (args: { url: string; html?: string; useCache?: boolean }) => {
 	const url = args.url;
 	const html = args.html || args.useCache === false ? await getHTML(url) : await getCachedHTML(url);
-
 	if (html) {
 		const doc = new JSDOM(html, { url });
 		const reader = new Readability(doc.window.document);
 		const article = reader.parse();
-
 		return { ...article, html };
 	}
 };

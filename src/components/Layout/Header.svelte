@@ -1,11 +1,16 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
+	import SignOut from '../Admin/SignOut.svelte';
 	import Button from '../Forms/Button.svelte';
 	import Logo from '../SVG/Logo.svelte';
 
-	const { route } = $page;
-	const isAdmin = /admin/i.test(route.id!);
-	const buttonLabel = isAdmin ? 'Back to Home' : 'Submit an AI';
+	const { url } = $page;
+	$: buttonLabel = isAdmin ? 'Home' : 'Submit an AI';
+	let isAdmin = /admin/i.test(url.pathname);
+	afterNavigate(({ to }) => {
+		isAdmin = /admin/i.test(to?.url.pathname ?? '');
+	});
 </script>
 
 <header
@@ -18,8 +23,16 @@
 		</div>
 	</div>
 	{#if isAdmin}
-		<Button as="a" href="/" className="md:block hidden" {buttonLabel} />
+		<div class="flex gap-8">
+			<SignOut />
+			<Button as="a" href="/" className="md:block hidden" {buttonLabel} />
+		</div>
 	{:else}
-		<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
+		<div class="flex gap-8">
+			{#if $page.data.session}
+				<Button as="a" href="/admin" buttonLabel="Admin" />
+			{/if}
+			<Button as="a" href="#submit-ai-form" className="md:block hidden" {buttonLabel} />
+		</div>
 	{/if}
 </header>

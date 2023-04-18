@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Tool } from '../../types';
+	import type { Tool } from '$lib/types';
 	import ToolCard from './ToolCard.svelte';
 	export let tools: Tool[];
 </script>

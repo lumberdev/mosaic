@@ -4,6 +4,8 @@ import {
 	CONTENTFUL_MANAGEMENT_TOKEN,
 } from '$env/static/private';
 import mgmt from 'contentful-management';
+import type { ContentfulEntryArgs } from './types';
+
 export async function contentfulFetch(query: string) {
 	const url = `https://graphql.contentful.com/content/v1/spaces/${CONTENTFUL_SPACE_ID}`;
 
@@ -71,3 +73,40 @@ export async function uploadImage(buffer: Buffer, fileName: string) {
 	}
 	return publishedAsset;
 }
+
+export const serializeEntry = (obj: ContentfulEntryArgs) => {
+	const locale = 'en-US';
+	return Object.entries(obj).reduce((acc, [key, value]) => {
+		if (key === 'imageId') {
+			return {
+				...acc,
+				featuredImage: {
+					[locale]: {
+						sys: {
+							type: 'Link',
+							linkType: 'Asset',
+							id: value,
+						},
+					},
+				},
+			};
+		}
+		if (key === 'imageUrl') {
+			return acc;
+		}
+		if (key === 'tags') {
+			return {
+				...acc,
+				tags: {
+					[locale]: value.split(', '),
+				},
+			};
+		}
+		return {
+			...acc,
+			[key]: {
+				[locale]: value,
+			},
+		};
+	}, {});
+};

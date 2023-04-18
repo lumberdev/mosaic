@@ -64,7 +64,7 @@ export const generateAIContentClientSide = async ({
 	const name = data?.name || siteTitle;
 	const tags = data?.tags?.join(', ') || '';
 	const description = data?.summary || '';
-	const { imageId, imageUrl } = await generateImage({ url, name });
+	const { imageId, imageUrl } = (await generateImage({ url, name })) ?? {};
 
 	isLoading = false;
 	return {

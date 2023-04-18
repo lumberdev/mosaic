@@ -5,11 +5,12 @@
 	import Button from '../Forms/Button.svelte';
 	import Logo from '../SVG/Logo.svelte';
 
-	const { url } = $page;
+	let isAdmin = /admin/i.test($page?.url?.pathname);
+
 	$: buttonLabel = isAdmin ? 'Home' : 'Submit an AI';
-	let isAdmin = /admin/i.test(url.pathname);
+
 	afterNavigate(({ to }) => {
-		isAdmin = /admin/i.test(to?.url.pathname ?? '');
+		isAdmin = /admin/i.test(to?.url?.pathname ?? '');
 	});
 </script>
 

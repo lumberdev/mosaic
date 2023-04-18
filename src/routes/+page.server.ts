@@ -29,11 +29,15 @@ const query = `
 `;
 
 export const load = (async () => {
-	const response = await contentfulFetch(query);
+	let response: Response;
+	try {
+		response = await contentfulFetch(query);
+	} catch (error) {
+		console.error(error);
+		throw svelteError(404, "Couldn't fetch tools");
+	}
 
-	if (!response.ok) throw svelteError(404, { message: response.statusText });
-
-	const { data } = await response.json();
+	const { data } = (await response?.json()) ?? {};
 	const tools = data.toolGalleryCollection.items[0].toolsCollection.items ?? [];
 	return {
 		tools,

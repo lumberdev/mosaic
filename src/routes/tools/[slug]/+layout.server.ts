@@ -20,12 +20,15 @@ export async function load({ params }: { params: { slug: string } }) {
 		}
 	}
 	`;
+	let response: Response;
+	try {
+		response = await contentfulFetch(query);
+	} catch (error) {
+		console.error(error);
+		throw svelteError(404, `Couldn't fetch tool ${params.slug}`);
+	}
 
-	const response = await contentfulFetch(query);
-
-	if (!response.ok) throw svelteError(404, { message: response.statusText });
-
-	const { data } = await response.json();
+	const { data } = (await response?.json()) ?? {};
 	const tool = data.toolCollection.items[0] ?? null;
 
 	return {

@@ -6,7 +6,7 @@
 	export let form: ActionData;
 	export let data: PageData;
 
-	const { tools } = data;
+	const { tools } = data ?? {};
 </script>
 
 <h1 class="mx-auto mb-24 w-fit text-center font-display text-5xl font-bold">

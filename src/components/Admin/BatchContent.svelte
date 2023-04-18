@@ -89,10 +89,6 @@
 		}
 	}
 
-	$: console.log('allReadability', allSiteReadbilityAndMetaDescriptions);
-	$: console.log('allContentfulEntries', allContentfulEntries);
-	$: console.log('allAiContent', allAiContent);
-
 	$: {
 		// Upload to Contentful once all the content is generated
 		if (allAiContent && allAiContent.filter(Boolean).length === allAiContent.length) {
@@ -126,7 +122,7 @@
 <form class="mx-auto flex w-max  flex-col items-center justify-center pt-8">
 	<h1 class="mb-4 font-display text-5xl">Found a new cool AI tool?</h1>
 	<p class="mb-8">Let's add it to Mosaic!</p>
-
+	<p>The upload to contentful is automatic once all all the AI generated content is done.</p>
 	<div class="mb-8 w-max">
 		<p class="mb-4 text-center font-display">How do you want to summarize this website?</p>
 
@@ -198,7 +194,7 @@
 				<div class="max-w-xs rounded border-3 border-black bg-white px-5 py-4">
 					<h2 class="mb-4 text-lg font-bold">{entry.fields.name['en-US']}</h2>
 					<p>{entry.fields.description['en-US']}</p>
-					<p class="my-4 font-display">{entry.fields.url['en-US']}</p>
+					<p class="my-4 break-all font-display">{entry.fields.url['en-US']}</p>
 				</div>
 			{/each}
 		</div>

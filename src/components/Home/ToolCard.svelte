@@ -16,8 +16,8 @@
 		</div>
 		<img
 			class="aspect-video w-full"
-			src={featuredImage.url}
-			alt={featuredImage.description ?? name} />
+			src={featuredImage?.url}
+			alt={featuredImage?.description ?? name} />
 		<div
 			class="flex-auto rounded-b border-t-3 border-black p-5 transition-colors group-hover:bg-beige">
 			<h2 class="mb-3 text-2xl font-bold">{name}</h2>

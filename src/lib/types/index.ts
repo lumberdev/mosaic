@@ -56,3 +56,14 @@ export type HandleGenerateContentClick = (params: {
 	siteTitle: string;
 	isReadability: boolean;
 }) => Promise<void>;
+
+export interface ChatGPTMessage {
+	role: 'user' | 'system';
+	content: string;
+}
+
+export interface ChatGPTAnswer {
+	name: string;
+	summary: string;
+	tags: string[];
+}

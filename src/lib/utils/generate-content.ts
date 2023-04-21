@@ -3,6 +3,7 @@ import { toSlug } from './to-slug';
 import type {
 	GenerateContentResponse,
 	MetaDescriptionResponse,
+	ChatGPTMessage,
 	ReadabilityResponse,
 } from '../types';
 import type { Asset } from 'contentful-management';
@@ -18,27 +19,30 @@ export const generateAIContentClientSide = async ({
 }): Promise<GenerateContentResponse> => {
 	let isLoading = true;
 
-	const prompt = `
-			Answer with the following JSON format: 
-			{
-			"name": "<string>",	
-      "summary": "<string>",
-      "tags": "<[]>"
-      }
-		
-			Get the name of the tool from this url: ${url}
-			Make a summary between 150 and 200 words of the pupose of the tool described by the following text and give it 3 to 5 tags:
-			${siteContent}
+	const message: ChatGPTMessage = {
+		role: 'user',
+		content: `
+		Answer in JSON format following this TypeScript interface: 
+		interface ChatGPTAnswer {
+			name: string;
+			summary: string;
+			tags: string[];
+		}
 
+		Get the name of the tool from this url: ${url}
+		Make a summary between 150 and 200 words of the pupose of the tool described by the following text and give it 3 to 5 tags:
+		${siteContent}
 			
-			{ "name":
-			`;
+		{ "name":
+		`,
+	};
+
 	let openAiResponse = null;
 
 	try {
 		openAiResponse = await DANGEROUSLY_PUBLIC_openai.post('', {
-			model: 'text-davinci-003',
-			prompt,
+			model: 'gpt-3.5-turbo',
+			messages: [message],
 			max_tokens: 500,
 			temperature: 0.7,
 		});
@@ -49,10 +53,10 @@ export const generateAIContentClientSide = async ({
 	const [completion] = openAiResponse?.data?.choices ?? [];
 	let data = null;
 
-	if (completion?.text) {
+	if (completion?.message) {
 		try {
 			data = JSON.parse(
-				String('{ "name":' + completion.text)
+				String('{ "name":' + completion.message.content)
 					.trim()
 					.replace(/\n/g, '')
 			);

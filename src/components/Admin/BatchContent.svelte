@@ -186,15 +186,20 @@
 {/if}
 
 {#if !isContentfulEntriesLoading && allContentfulEntries.length > 0}
-	<div class="mx-auto flex w-max  flex-col items-center justify-center pt-8">
+	{@const gridColumns =
+		allContentfulEntries.length > 3 ? 'grid-cols-3' : `grid-cols-${allContentfulEntries.length}`}
+	<div class="mx-auto flex flex-col items-center justify-center pt-8">
 		<h1 class="mb-4 font-display text-5xl">Contentful Entries</h1>
 		<p class="mb-8">Here are the entries that were created in Contentful</p>
-		<div class="grid w-full grid-cols-3 gap-2">
-			{#each allContentfulEntries as entry}
-				<div class="max-w-xs rounded border-3 border-black bg-white px-5 py-4">
+		<div class={`grid w-full ${gridColumns} justify-center gap-2`}>
+			{#each allContentfulEntries as entry, i}
+				<div class="max-w-lg rounded border-3 border-black bg-white px-5 py-4">
 					<h2 class="mb-4 text-lg font-bold">{entry.fields.name['en-US']}</h2>
 					<p>{entry.fields.description['en-US']}</p>
 					<p class="my-4 break-all font-display">{entry.fields.url['en-US']}</p>
+					<img
+						src={allAiContent?.[i].data.imageUrl}
+						alt={`Screenshot of ${entry.fields.name['en-US']}`} />
 				</div>
 			{/each}
 		</div>
